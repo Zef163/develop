@@ -4,8 +4,8 @@
   "description": "Frontend Developer tasks",
   "main": "index.js",
   "scripts": {
-    "build": "webpack --config webpack.config.js",
-    "dev": "webpack-dev-server --progress --color --hot --content-base dist/ --config webpack.config.js"
+    "build": "NODE_ENV=production webpack --config webpack.config.js",
+    "dev": "NODE_ENV=development webpack-dev-server --progress --color --hot --content-base dist/ --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -26,13 +26,14 @@
     "express": "^4.15.4",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
-    "lodash": "^4.17.4",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react-router-dom": "^4.2.0",
     "semantic-ui-react": "^0.71.5",
     "style-loader": "^0.18.2",
     "webpack": "^3.5.5",
-    "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.7.1"
+  },
+  "dependencies": {
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1"
   }
 }

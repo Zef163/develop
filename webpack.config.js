@@ -1,15 +1,14 @@
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 const webpack = require('webpack');
 
-const analyze = !!process.env.ANALYZE_ENV;
 const env = process.env.NODE_ENV || 'development';
 
 const webpackConfig = {
     entry: './src/index.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/'
     },
     module: {
         rules: [
@@ -60,12 +59,11 @@ const webpackConfig = {
         ],
         extensions: ['.js', '.jsx']
     },
-    devtool: 'inline-source-map'
+    devtool: 'inline-source-map',
+    devServer: {
+        historyApiFallback: true
+    }
 };
-
-if (analyze) {
-    webpackConfig.plugins.push(new BundleAnalyzerPlugin());
-}
 
 if (env === 'production') {
     webpackConfig.plugins.push(
