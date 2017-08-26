@@ -8,23 +8,23 @@ import { Container } from 'semantic-ui-react'
 /**
  * Components
  */
-import Custom from './Custom.jsx';
-import Error404 from './Error404.jsx';
+import Articles from './Articles';
+import ArticlesOne from './ArticlesOne';
+import Error404 from './Error404';
 import Footer from './Footer';
 import Header from './Header';
-import Main from './Main.jsx';
+import Main from './Main';
 
 export default class App extends Component {
     render() {
-        console.log(this.props);
-
         return (
             <div>
                 <Header />
-                <Container className="content">
+                <Container className="app-content">
                     <Switch>
                         <Route path="/" exact component={Main} />
-                        <Route path="/test/" component={Custom} />
+                        <Route path="/articles/" exact component={Articles} />
+                        <Route path="/articles/view/:id/" component={ArticlesOne} />
                         <Route path="*" exact component={Error404} />
                     </Switch>
                 </Container>

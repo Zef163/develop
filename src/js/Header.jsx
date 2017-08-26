@@ -8,7 +8,7 @@ export default class Header extends Component {
      * Function for get menu elements
      */
     getMenuElements() {
-        let defaultClassName = "header__link";
+        let defaultClassName = "app-header__link";
         let activeClassName = `${defaultClassName}--active`;
 
         return [
@@ -17,13 +17,13 @@ export default class Header extends Component {
                 exact: true,
                 className: defaultClassName,
                 activeClassName: activeClassName,
-                dangerouslySetInnerHTML: {__html: "Menu"}
+                dangerouslySetInnerHTML: {__html: "Main"}
             },
             {
-                to: '/test/',
+                to: '/articles/',
                 className: defaultClassName,
                 activeClassName: activeClassName,
-                dangerouslySetInnerHTML: {__html: "Test"}
+                dangerouslySetInnerHTML: {__html: "Articles"}
             }
         ];
     }
@@ -41,16 +41,16 @@ export default class Header extends Component {
 
     render() {
         return (
-            <header className="header">
+            <header className="app-header">
                 <Container>
                     <Grid columns={12}>
                         <Grid.Column computer={4}>
-                            <div className="header__logo">
+                            <div className="app-header__logo">
                                 Logo
                             </div>
                         </Grid.Column>
                         <Grid.Column computer={8}>
-                            <div className="header__menu">
+                            <div className="app-header__menu">
                                 {this.renderMenuElements()}
                             </div>
                         </Grid.Column>
