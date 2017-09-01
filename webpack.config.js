@@ -37,13 +37,19 @@ const webpackConfig = {
                 query: {
                     presets: [
                         'es2015',
-                        'react'
+                        'react',
+                        'stage-0'
                     ],
                     plugins: []
                 },
                 include: [
                     path.resolve(__dirname, 'src')
                 ]
+            },
+            {
+                test: /\.png$/,
+                loader: "url-loader",
+                query: { mimetype: "image/png" }
             }
         ]
     },
@@ -55,6 +61,7 @@ const webpackConfig = {
     resolve: {
         modules: [
             path.join(process.cwd(), 'src'),
+            path.join(process.cwd(), 'src', 'js'),
             'node_modules'
         ],
         extensions: ['.js', '.jsx']

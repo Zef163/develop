@@ -1,29 +1,28 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import { Dimmer, Loader } from 'semantic-ui-react';
+/**
+ * Libraries
+ */
+import React from "react";
+import PropTypes from "prop-types";
+import {Dimmer, Loader} from "semantic-ui-react";
 
-const propTypes = {
-    'show': PropTypes.bool
-};
+export default class PageLoader extends React.Component {
 
-const defaultProps = {
-    'show': false
-};
+    static propTypes = {
+        "show": PropTypes.bool
+    };
 
-export default class PageLoader extends Component {
+    static defaultProps = {
+        "show": false
+    };
 
-
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        let { show } = this.props;
+    render () {
+        let {show} = this.props;
 
         return (
             <Dimmer active={show} inverted>
                 <Loader inverted>Loading</Loader>
             </Dimmer>
-        )
+        );
     }
+
 }

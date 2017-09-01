@@ -1,29 +1,47 @@
-import React, {Component} from 'react';
-import { NavLink } from 'react-router-dom';
-import { Grid, Container } from 'semantic-ui-react';
+/**
+ * Libraries
+ */
+import React from "react";
+import {NavLink} from "react-router-dom";
+import {Grid, Container} from "semantic-ui-react";
 
-export default class Header extends Component {
+export default class Header extends React.Component {
 
     /**
      * Function for get menu elements
      */
-    getMenuElements() {
-        let defaultClassName = "app-header__link";
-        let activeClassName = `${defaultClassName}--active`;
+    getMenuElements () {
+        let defaultClassName = "app-header__link",
+            activeClassName = `${defaultClassName}--active`;
 
         return [
             {
-                to: '/',
-                exact: true,
-                className: defaultClassName,
-                activeClassName: activeClassName,
-                dangerouslySetInnerHTML: {__html: "Main"}
+                "to": "/",
+                "exact": true,
+                "className": defaultClassName,
+                "activeClassName": activeClassName,
+                "dangerouslySetInnerHTML": {
+                    "__html": "Main"
+                },
+                "id": "main"
             },
             {
-                to: '/articles/',
-                className: defaultClassName,
-                activeClassName: activeClassName,
-                dangerouslySetInnerHTML: {__html: "Articles"}
+                "to": "/articles/",
+                "className": defaultClassName,
+                "activeClassName": activeClassName,
+                "dangerouslySetInnerHTML": {
+                    "__html": "Articles"
+                },
+                "id": "articles"
+            },
+            {
+                "to": "/comments/",
+                "className": defaultClassName,
+                "activeClassName": activeClassName,
+                "dangerouslySetInnerHTML": {
+                    "__html": "Comments"
+                },
+                "id": "comments"
             }
         ];
     }
@@ -31,15 +49,15 @@ export default class Header extends Component {
     /**
      * Function for render NavLink elements from menu elements
      */
-    renderMenuElements() {
-        return this.getMenuElements().map((params, key) => {
+    renderMenuElements () {
+        return this.getMenuElements().map((params) => {
             return (
-                <NavLink {...params} key={`menuItem__${key}`} />
-            )
-        })
+                <NavLink {...params} key={`menuItem__${params.id}`} />
+            );
+        });
     }
 
-    render() {
+    render () {
         return (
             <header className="app-header">
                 <Container>
@@ -59,4 +77,5 @@ export default class Header extends Component {
             </header>
         );
     }
+
 }
