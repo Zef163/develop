@@ -3,17 +3,17 @@
     "id": "1",
     "author": {
       "id": "1",
-      "name": "Polly Jane"
+      "name": "Leanne Graham"
     },
     "title": "How I spent my summer",
     "text": "Few words about my summer story...",
     "comments": [
       {
         "id": "1",
-        "text": "Paris is so cool!",
+        "text": "Laudantium enim quasi est quidem magnam voluptate ipsam eos. tempora quo necessitatibus. dolor quam autem quasi. reiciendis et nam sapiente accusantium",
         "commenter": {
           "id": "2",
-          "name": "John Galt"
+          "name": "Ervin Howell"
         }
       }
     ]
@@ -29,10 +29,10 @@
     "comments": [
       {
         "id": "2",
-        "text": "Paris is so cool!",
+        "text": "Est natus enim nihil est dolore omnis voluptatem numquam. et omnis occaecati quod ullam at. voluptatem error expedita pariatur. nihil sint nostrum voluptatem reiciendis et",
         "commenter": {
           "id": "1",
-          "name": "Polly Jane"
+          "name": "Leanne Graham"
         }
       }
     ]
@@ -41,33 +41,33 @@
     "id": "3",
     "author": {
       "id": "1",
-      "name": "Polly Jane"
+      "name": "Leanne Graham"
     },
     "title": "Beginner's Thread / Easy Questions",
     "text": "This one may also stay a big longer than a week since I’m going on a vacation soon.",
     "comments": [
       {
         "id": "3",
-        "text": "Paris is so cool!",
+        "text": "Non et atque. occaecati deserunt quas accusantium unde odit nobis qui voluptatem. quia voluptas consequuntur itaque dolor. et qui rerum deleniti ut occaecati",
         "commenter": {
           "id": "1",
-          "name": "Polly Jane"
+          "name": "Leanne Graham"
         }
       },
       {
         "id": "4",
-        "text": "Paris is so cool!",
+        "text": "Harum non quasi et ratione. tempore iure ex voluptates in ratione. harum architecto fugit inventore cupiditate. voluptates magni quo et",
         "commenter": {
           "id": "2",
-          "name": "John Galt"
+          "name": "Ervin Howell"
         }
       },
       {
         "id": "5",
-        "text": "Paris is nice!",
+        "text": "Quia molestiae reprehenderit quasi aspernatur. aut expedita occaecati aliquam eveniet laudantium. omnis quibusdam delectus saepe quia accusamus maiores nam est. cum et ducimus et vero voluptates excepturi deleniti ratione",
         "commenter": {
           "id": "3",
-          "name": "Admin"
+          "name": "Clementine Bauch"
         }
       }
     ]

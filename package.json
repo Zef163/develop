@@ -1,17 +1,17 @@
 {
   "name": "developer",
   "version": "1.0.0",
-  "description": "Frontend Developer tasks",
+  "description": "Frontend Developer tasks. This is demo NPM package",
   "main": "index.js",
   "scripts": {
-    "build": "NODE_ENV=production webpack --config webpack.config.js",
+    "build": "NODE_ENV=production webpack --progress --config webpack.config.js",
     "dev": "NODE_ENV=development webpack-dev-server --progress --color --hot --content-base dist/ --config webpack.config.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Zef163/develop.git"
   },
-  "author": "Andrey Rogachev (vi163rus@gmail.com)",
+  "author": "Andrey Rogachev <vi163rus@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Zef163/develop/issues"
