@@ -58,6 +58,9 @@ export default class CommentsGroup extends React.Component {
         );
     }
 
+    /**
+     * Function for render comments form
+     */
     renderForm () {
         let {form, articleID} = this.props;
 
