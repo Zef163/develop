@@ -9,3 +9,5 @@ This is demo NPM package.
 `$ npm run dev` - Run application in development mode
 
 `$ npm run build` - Build application for production
+
+`$ npm run test` - Run all tests
