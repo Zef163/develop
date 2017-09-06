@@ -79,6 +79,10 @@ export default class CommentsGroup extends React.Component {
     render () {
         let {comments, replyForm, editForm} = this.props;
 
+        if (Object.keys(comments).length === 0) {
+            return <p>Comments not found</p>;
+        }
+
         return (
             <Comment.Group>
                 {comments.map((item) => {

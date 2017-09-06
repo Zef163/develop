@@ -101,8 +101,13 @@ export default class Users extends React.Component {
             );
     }
 
+    /**
+     * Function for update info from current page
+     */
     onUpdateComments (newName = "") {
         // <!-- Type here dispatch event --> //
+
+        // console.log("newName is " + newName);
 
         // @todo: Remove this.setState after typing dispatch event
         this.setState((prevState) => {

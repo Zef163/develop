@@ -35,11 +35,7 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
             }
         },
         "childContextTypes": {
-            "router": PropTypes.object.isRequired,
-            "elements": PropTypes.oneOfType([
-                PropTypes.array,
-                PropTypes.object
-            ])
+            "router": PropTypes.object.isRequired
         }
     };
 
@@ -97,7 +93,7 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
             "isLoading": false
         });
 
-        // Check exist component "PageLoader"
+        // Check exist component "Error404"
         expect(component.find("Error404")).toHaveLength(1);
     });
 

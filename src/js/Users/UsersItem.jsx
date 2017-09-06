@@ -169,6 +169,11 @@ export default class UsersItem extends React.Component {
         let {info} = this.props,
             {showForm} = this.state;
 
+        // Data not found
+        if (Object.keys(info).length === 0) {
+            return <div />;
+        }
+
         return (
             <Card>
                 <Image src={NoPhoto} />

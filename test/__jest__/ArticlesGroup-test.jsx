@@ -33,6 +33,7 @@ describe("Component 'ArticlesGroup' in js/Articles", () => {
                     "createHref": () => {}
                 }
             },
+            // Default props
             "elements": Object()
         },
         "childContextTypes": {
