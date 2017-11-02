@@ -8,7 +8,7 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {Comments} from "js/Comments";
+import {Comments} from "client/components/Comments";
 
 /**
  * Setup

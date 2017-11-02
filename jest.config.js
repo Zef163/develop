@@ -11,7 +11,8 @@ module.exports = {
     "rootDir": __dirname,
     "modulePaths": [
         path.join(__dirname, "src"),
-        path.join(__dirname, "src", "js")
+        path.join(__dirname, "src", "js"),
+        path.join(__dirname, "src", "js", "components")
     ],
     "moduleFileExtensions": [
         "js",

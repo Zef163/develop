@@ -10,10 +10,10 @@ import Axios from "axios";
 /**
  * Components
  */
-import {CommentsGroup} from "js/Comments";
-import Error404 from "js/Error404";
-import PageLoader from "js/PageLoader";
-import NoPhoto from "img/no-photo.png";
+import {CommentsGroup} from "components/Comments";
+import Error404 from "Error404";
+import PageLoader from "PageLoader";
+import NoPhoto from "dist/img/no-photo.png";
 
 export default class ArticlesOne extends React.Component {
 

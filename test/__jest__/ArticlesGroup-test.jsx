@@ -8,7 +8,7 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {ArticlesGroup} from "js/Articles";
+import {ArticlesGroup} from "client/components/Articles";
 
 /**
  * Setup

@@ -74,6 +74,7 @@
       }
     }],
     "react/forbid-component-props": 0,
+    "react/forbid-prop-types": 0,
     "react/no-is-mounted": 1,
     "react/no-set-state": 0,
     "react/no-unused-prop-types": 0,
@@ -81,6 +82,8 @@
     "react/jsx-handler-names": 0,
     "react/jsx-no-literals": 0,
     "react/require-optimization": 0,
+    "react/require-default-props": 0,
+    "react/no-unused-state": 0,
     "valid-jsdoc": 0,
     "prefer-const": 0,
     "padded-blocks": [1, {"blocks": "never", "classes": "always"}],
@@ -105,6 +108,8 @@
     "no-inline-comments": 0,
     "no-prototype-builtins": 1,
     "object-shorthand": [1, "consistent"],
-    "class-methods-use-this": 0
+    "class-methods-use-this": 0,
+    "no-extra-parens": 0,
+    "indent": 0
   }
 }

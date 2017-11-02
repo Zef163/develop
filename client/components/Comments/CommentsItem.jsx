@@ -10,7 +10,7 @@ import {Button, Comment, Form, Message} from "semantic-ui-react";
 /**
  * Components
  */
-import NoPhoto from "img/no-photo.png";
+import NoPhoto from "dist/img/no-photo.png";
 
 export default class CommentsItem extends React.Component {
 

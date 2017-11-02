@@ -7,9 +7,9 @@ import Axios from "axios";
 /**
  * Components
  */
-import {CommentsGroup} from "js/Comments";
-import Error404 from "js/Error404";
-import PageLoader from "js/PageLoader";
+import {CommentsGroup} from "components/Comments";
+import Error404 from "Error404";
+import PageLoader from "PageLoader";
 
 export default class Comments extends React.Component {
 

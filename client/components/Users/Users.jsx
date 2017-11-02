@@ -7,12 +7,17 @@ import {Header, Grid} from "semantic-ui-react";
 import Axios from "axios";
 
 /**
+ * Actions
+ */
+import * as UserActions from "redux/actions/UserActions";
+
+/**
  * Components
  */
-import {CommentsGroup} from "js/Comments";
-import {UsersItem} from "js/Users";
-import Error404 from "js/Error404";
-import PageLoader from "js/PageLoader";
+import {CommentsGroup} from "components/Comments";
+import {UsersItem} from "components/Users";
+import Error404 from "Error404";
+import PageLoader from "PageLoader";
 
 export default class Users extends React.Component {
 
@@ -26,6 +31,10 @@ export default class Users extends React.Component {
     static defaultProps = {
         "match": Object()
     };
+
+    static needs = [
+        UserActions.getOneUser
+    ];
 
     /**
      * Function for get user information

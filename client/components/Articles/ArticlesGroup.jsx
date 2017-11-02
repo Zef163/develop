@@ -9,7 +9,7 @@ import {Item} from "semantic-ui-react";
 /**
  * Components
  */
-import NoPhoto from "img/no-photo.png";
+import NoPhoto from "dist/img/no-photo.png";
 
 export default class ArticlesGroup extends React.Component {
 

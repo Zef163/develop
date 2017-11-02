@@ -8,7 +8,7 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {UsersItem} from "js/Users";
+import {UsersItem} from "client/components/Users";
 
 /**
  * Setup

@@ -8,7 +8,7 @@ import {Header} from "semantic-ui-react";
 /**
  * Components
  */
-import {ArticlesGroup} from "js/Articles";
+import {ArticlesGroup} from "components/Articles";
 
 export default class Articles extends React.Component {
 

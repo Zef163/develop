@@ -9,7 +9,7 @@ import Axios from "axios";
 /**
  * Components
  */
-import {CommentsItem} from "js/Comments";
+import {CommentsItem} from "components/Comments";
 
 export default class CommentsGroup extends React.Component {
 
