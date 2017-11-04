@@ -10,7 +10,6 @@ export function getAllArticles () {
     return async dispatch => {
         try {
             const {data} = await Axios.get("/api/data.json");
-            console.log("data".repeat(100), data);
 
             dispatch({
                 "type": "GET_ALL_ARTICLES",
@@ -18,7 +17,6 @@ export function getAllArticles () {
             });
 
         } catch (error) {
-            console.log("error".repeat(100), error);
             console.error(error);
         }
     };

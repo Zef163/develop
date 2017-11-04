@@ -26,7 +26,6 @@ export default function reducer (state = new Map(), action) {
         case "EDIT_COMMENT": {
             state.map((comment, index) => {
                 if (Number(comment.get("id")) === Number(action.commentID)) {
-                    console.log("action", action);
                     state = state.setIn([index, "text"], action.text);
                 }
             });
