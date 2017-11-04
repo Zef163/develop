@@ -4,12 +4,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {Header, Grid} from "semantic-ui-react";
-import Axios from "axios";
+import {connect} from "react-redux";
+import Immutable from "immutable";
 
 /**
  * Actions
  */
 import * as UserActions from "redux/actions/UserActions";
+import * as CommentsActions from "redux/actions/CommentsActions";
 
 /**
  * Components
@@ -18,6 +20,11 @@ import {CommentsGroup} from "components/Comments";
 import {UsersItem} from "components/Users";
 import Error404 from "Error404";
 import PageLoader from "PageLoader";
+
+/**
+ * Getting store
+ */
+@connect(store => ({ user: store.user, comments: store.comments }))
 
 export default class Users extends React.Component {
 
@@ -32,39 +39,6 @@ export default class Users extends React.Component {
         "match": Object()
     };
 
-    static needs = [
-        UserActions.getOneUser
-    ];
-
-    /**
-     * Function for get user information
-     */
-    static searchUserInfo (article, userID) {
-        let userInfo = [];
-        if (Object.prototype.hasOwnProperty.call(article, "author", "id")) {
-            if (parseInt(article.author.id) === userID) {
-                userInfo = article.author;
-            }
-        }
-        return userInfo;
-    };
-
-    /**
-     * Function for get user comments
-     */
-    static searchUserComments (article, userID, comments) {
-        if (Object.prototype.hasOwnProperty.call(article, "comments")) {
-            for (let comment of article.comments) {
-                if (Object.prototype.hasOwnProperty.call(comment, "commenter", "id")) {
-                    if (parseInt(comment.commenter.id) === userID) {
-                        comments.push(comment);
-                    }
-                }
-            }
-        }
-        return comments;
-    };
-
     constructor (props) {
         super(props);
 
@@ -77,60 +51,39 @@ export default class Users extends React.Component {
         this.onUpdateComments = this.onUpdateComments.bind(this);
     }
 
-    componentDidMount () {
-        Axios.get("/api/data.json")
-            .then(
-                // Success
-                (response) => {
-                    let {data} = response,
-                        comments = [],
-                        userID = this.getUserID(),
-                        userInfo = [];
+    componentWillMount () {
+        let {dispatch} = this.props,
+            userID = this.getUserID();
 
-                    for (let article of data) {
-                        // Search user info
-                        if (Object.keys(userInfo).length === 0) {
-                            userInfo = Users.searchUserInfo(article, userID);
-                        }
+        dispatch(UserActions.getOneUser(userID))
+            .then(res => {
+                this.endLoading();
+            })
+            .catch(error => {
+                console.error(error);
+                this.endLoading();
+            });
+    }
 
-                        // Search user comments
-                        comments = Users.searchUserComments(article, userID, comments);
-                    }
-
-                    this.setState({
-                        "isLoading": false,
-                        "userInfo": userInfo,
-                        "comments": comments
-                    });
-                },
-                // Error
-                (error) => {
-                    console.error(error);
-                }
-            );
+    /**
+     * Change loading status is "Loaded"
+     */
+    endLoading() {
+        this.setState({
+            "isLoading": false
+        })
     }
 
     /**
      * Function for update info from current page
      */
     onUpdateComments (newName = "") {
-        // <!-- Type here dispatch event --> //
+        let userID = this.getUserID();
 
-        // console.log("newName is " + newName);
-
-        // @todo: Remove this.setState after typing dispatch event
-        this.setState((prevState) => {
-            // Update name in comments
-            for (let comment of prevState.comments) {
-                comment.commenter.name = newName;
-            }
-
-            // Update name in user info
-            prevState.userInfo.name = newName;
-
-            // Set new state
-            return prevState;
-        });
+        // Update user name
+        this.props.dispatch(UserActions.changeUserName(userID, newName))
+            .then(res => {})
+            .catch(error => console.error);
     }
 
     /**
@@ -148,32 +101,29 @@ export default class Users extends React.Component {
     }
 
     render () {
-        let {userInfo, comments, isLoading} = this.state;
+        let userID = this.getUserID(),
+            {user} = this.props,
+            userInfo = user.getIn([`user_${userID}`, "userInfo"], Immutable.fromJS({})),
+            comments = user.getIn([`user_${userID}`, "comments"], Immutable.fromJS({})),
+            {isLoading} = this.state;
 
-        if (Object.keys(userInfo).length === 0) {
-            if (isLoading) {
-                return (
-                    <PageLoader show={isLoading} />
-                );
-            }
-            return (
-                <Error404 />
-            );
+        if (userInfo.size === 0) {
+            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
         }
 
         return (
             <Grid columns="12">
                 <Grid.Row>
                     <Grid.Column computer="12">
-                        <Header as="h1">{userInfo.name}</Header>
+                        <Header as="h1">{userInfo.getIn(["name"], "")}</Header>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column computer="4">
-                        <UsersItem info={userInfo} updateComments={this.onUpdateComments} />
+                        <UsersItem info={userInfo.toJS()} updateComments={this.onUpdateComments} />
                     </Grid.Column>
                     <Grid.Column computer="8">
-                        <CommentsGroup comments={comments} editForm />
+                        <CommentsGroup comments={comments.toJS()} editForm />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>

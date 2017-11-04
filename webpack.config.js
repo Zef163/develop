@@ -9,9 +9,7 @@ const webpackConfig = {
     "output": {
         "filename": "bundle.js",
         "path": path.resolve(__dirname, "client", "dist"),
-        "publicPath": "/",
-        "hotUpdateChunkFilename": "dist/hot-update.js",
-        "hotUpdateMainFilename": "dist/hot-update.json"
+        "publicPath": "/"
     },
     "module": {
         "rules": [
@@ -47,7 +45,7 @@ const webpackConfig = {
                         "es2015",
                         "stage-0"
                     ],
-                    "plugins": [],
+                    "plugins": ["transform-decorators-legacy"],
                     "cacheDirectory": env !== "production"
                 },
                 "include": [
@@ -83,17 +81,14 @@ const webpackConfig = {
     "devServer": {
         "historyApiFallback": true,
         "hot": true,
-        "inline": true,
-        "progress": true,
+        // "filename": "bundle.js",
         "contentBase": path.resolve(__dirname, "client"),
-        "publicPath": path.resolve(__dirname, "client")
+        "publicPath": "http://localhost:8080/dist/"
     }
 };
 
 switch (env) {
     case "production": {
-        webpackConfig.entry = "./client/index.jsx";
-
         webpackConfig.plugins.push(
             new webpack.LoaderOptionsPlugin({
                 "minimize": true,
@@ -110,15 +105,9 @@ switch (env) {
         break;
     }
     case "development": {
-        webpackConfig.entry = [
-            "webpack-dev-server/client?http://localhost:8080/",
-            "webpack/hot/only-dev-server",
-            "babel-polyfill",
-            "./client/"
-        ];
-
         webpackConfig.plugins.push(
-            new webpack.HotModuleReplacementPlugin()
+            new webpack.HotModuleReplacementPlugin(),
+            new webpack.NoEmitOnErrorsPlugin()
         );
         break;
     }

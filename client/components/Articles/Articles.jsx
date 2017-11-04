@@ -2,13 +2,24 @@
  * Libraries
  */
 import React from "react";
-import Axios from "axios";
 import {Header} from "semantic-ui-react";
+import {connect} from "react-redux";
+
+/**
+ * Actions
+ */
+import * as ArticleActions from "redux/actions/ArticleActions";
 
 /**
  * Components
  */
 import {ArticlesGroup} from "components/Articles";
+import PageLoader from "PageLoader";
+
+/**
+ * Getting store
+ */
+@connect(store => ({ articles: store.articles }))
 
 export default class Articles extends React.Component {
 
@@ -16,33 +27,41 @@ export default class Articles extends React.Component {
         super(props);
 
         this.state = {
-            "articles": Object()
+            "isLoading": true
         };
     }
 
-    componentDidMount () {
-        Axios.get("/api/data.json")
-            .then(
-                // Success
-                (response) => {
+    componentWillMount () {
+        let {articles, dispatch} = this.props;
+
+        if (articles.size === 0) {
+            dispatch(ArticleActions.getAllArticles())
+                .then(res => {
                     this.setState({
-                        "articles": response.data
+                        "isLoading": false
                     });
-                },
-                // Error
-                (error) => {
+                })
+                .catch(error => {
                     console.error(error);
-                }
-            );
+                    this.setState({
+                        "isLoading": false
+                    });
+                })
+        }
     }
 
     render () {
-        let {articles} = this.state;
+        let {articles} = this.props,
+            {isLoading} = this.state;
+
+        if (articles.size === 0 && isLoading) {
+            return <PageLoader show={isLoading} />;
+        }
 
         return (
             <div>
                 <Header as="h1">Articles</Header>
-                <ArticlesGroup elements={articles} />
+                <ArticlesGroup elements={articles.toJS()} />
             </div>
         );
     }

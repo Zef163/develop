@@ -2,17 +2,22 @@
  * Libraries
  */
 import {createStore, applyMiddleware} from "redux";
-import thunkMiddleware from "redux-thunk";
+import ReduxThunk from "redux-thunk";
+import logger from "redux-logger";
 
 /**
  * Application components
  */
-import reducers from "./reducers/index";
-import promiseMiddleware from "lib/promiseMiddleware";
-import immutifyState from "lib/immutifyState";
+import reducers from "./reducers/";
 
-const initialState = immutifyState(window.__INITIAL_STATE__);
+/**
+ * Middleware
+ */
+let middleware = [ReduxThunk];
+if (process.env.NODE_ENV === "development") {
+    middleware.push(logger());
+}
 
-const store = applyMiddleware(thunkMiddleware, promiseMiddleware)(createStore)(reducers, initialState);
+const store = createStore(reducers, applyMiddleware(...middleware));
 
 export default store;

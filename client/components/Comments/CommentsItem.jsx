@@ -6,11 +6,22 @@ import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 import Axios from "axios";
 import {Button, Comment, Form, Message} from "semantic-ui-react";
+import {connect} from "react-redux";
+
+/**
+ * Actions
+ */
+import * as CommentsAction from "redux/actions/CommentsActions";
 
 /**
  * Components
  */
 import NoPhoto from "dist/img/no-photo.png";
+
+/**
+ * Getting store
+ */
+@connect(store => ({ }))
 
 export default class CommentsItem extends React.Component {
 
@@ -151,29 +162,8 @@ export default class CommentsItem extends React.Component {
      * Function for send request from comments edit form
      */
     onSubmitEditForm () {
-        let {data} = this.props,
-            {replyText} = this.state,
-            // Function at error send request
-            errorFunc = (error) => {
-                this.setState({
-                    "errorEditMessage": error.message,
-                    "loadingEditForm": false
-                });
-            },
-            // Function at success send request
-            successFunc = (response) => {
-                if (response.success !== true) {
-                    errorFunc(Error("Message not sent"));
-                    return;
-                }
-                this.setState({
-                    "loadingEditForm": false,
-                    "successEditMessage": "Message is sent"
-                });
-                setTimeout(() => {
-                    this.onCloseEdit();
-                }, 2000);
-            };
+        let {data, dispatch} = this.props,
+            {editText} = this.state;
 
         // Hide notification messages and show loader
         this.setState({
@@ -182,10 +172,22 @@ export default class CommentsItem extends React.Component {
             "successEditMessage": ""
         });
 
-        // Send PUT request
-        Axios.put(`/api/comments/${data.id}`, {
-            "text": replyText
-        }).then(successFunc, errorFunc);
+        dispatch(CommentsAction.editComment(data.id, editText))
+            .then(response => {
+                this.setState({
+                    "loadingEditForm": false,
+                    "successEditMessage": "Message is sent"
+                });
+                setTimeout(() => {
+                    this.onCloseEdit();
+                }, 2000);
+            })
+            .catch(error => {
+                this.setState({
+                    "errorEditMessage": error.message,
+                    "loadingEditForm": false
+                });
+            });
     }
 
     /**

@@ -5,7 +5,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 import {Image, Header, Icon} from "semantic-ui-react";
-import Axios from "axios";
+import {connect} from "react-redux";
+import Immutable from "immutable";
+
+/**
+ * Actions
+ */
+import * as ArticleActions from "redux/actions/ArticleActions";
 
 /**
  * Components
@@ -14,6 +20,11 @@ import {CommentsGroup} from "components/Comments";
 import Error404 from "Error404";
 import PageLoader from "PageLoader";
 import NoPhoto from "dist/img/no-photo.png";
+
+/**
+ * Getting store
+ */
+@connect(store => ({ articles: store.articles }))
 
 export default class ArticlesOne extends React.Component {
 
@@ -32,70 +43,67 @@ export default class ArticlesOne extends React.Component {
         super(props);
 
         this.state = {
-            "article": Object(),
             "isLoading": true
         };
     }
 
-    componentDidMount () {
-        Axios.get("/api/data.json")
-            .then(
-                // Success
-                (response) => {
-                    let params = this.getParams(),
-                        {data} = response;
+    componentWillMount () {
+        let {dispatch} = this.props,
+            articleID = this.getArticleID();
 
-                    if (Object.keys(params).length > 0) {
-                        data = data.filter((item) => {
-                            return parseInt(item.id) === parseInt(params.id);
-                        });
-                    }
-
-                    this.setState({
-                        "article": data.shift(),
-                        "isLoading": false
-                    });
-                },
-                // Error
-                (error) => {
-                    console.error(error);
-                }
-            );
+        dispatch(ArticleActions.getOneArticles(articleID))
+            .then(res => {
+                this.setState({
+                    "isLoading": false
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                this.setState({
+                    "isLoading": false
+                });
+            });
     }
 
-    getParams () {
-        return this.props.match.params;
+    /**
+     * Function for get article identification number
+     */
+    getArticleID () {
+        let {params} = this.props.match,
+            articleID = 0;
+
+        if (Object.prototype.hasOwnProperty.call(params, "id")) {
+            articleID = params.id;
+        }
+
+        return parseInt(articleID);
     }
 
     render () {
-        let {article, isLoading} = this.state,
-            articleID = parseInt(article.id);   // Article identifier at integer type
+        let {articles} = this.props,
+            articleID = this.getArticleID(),
+            article = articles.filter(item => Number(item.get("id")) === articleID).first() || Immutable.fromJS({}),
+            comments = article.getIn(["comments"], Immutable.fromJS([])),
+            {isLoading} = this.state;
 
-        if (Object.keys(article).length === 0) {
-            if (isLoading) {
-                return (
-                    <PageLoader show={isLoading} />
-                );
-            }
-            return (
-                <Error404 />
-            );
+        if (article.size === 0) {
+            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
         }
 
         return (
-            <div key={`article-one__${article.id}`}>
+            <div key={`article-one__${articleID}`}>
                 <Header as="h1">
                     <Link to="/articles/">
                         <Icon name="arrow left" />
                     </Link>
-                    {article.title}
+                    {article.getIn(["title"], "")}
                 </Header>
                 <Image size="large" src={NoPhoto} />
-                <p>{article.text}</p>
-                <p>Author: {article.author.name}</p>
+                <p>{article.getIn(["text"], "")}</p>
+                <p>Author: {article.getIn(["author", "name"], "")}</p>
 
                 <Header as="h2" dividing>Comments</Header>
-                <CommentsGroup articleID={articleID} comments={article.comments} editForm form replyForm />
+                <CommentsGroup articleID={articleID} comments={comments.toJS()} editForm form replyForm />
             </div>
         );
     }

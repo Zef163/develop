@@ -2,7 +2,12 @@
  * Libraries
  */import React from "react";
 import {Header} from "semantic-ui-react";
-import Axios from "axios";
+import {connect} from "react-redux";
+
+/**
+ * Actions
+ */
+import * as CommentsAction from "redux/actions/CommentsActions";
 
 /**
  * Components
@@ -11,63 +16,52 @@ import {CommentsGroup} from "components/Comments";
 import Error404 from "Error404";
 import PageLoader from "PageLoader";
 
+/**
+ * Getting store
+ */
+@connect(store => ({ comments: store.comments }))
+
 export default class Comments extends React.Component {
 
     constructor (props) {
         super(props);
 
         this.state = {
-            "comments": Object(),
             "isLoading": true
         };
     }
 
-    componentDidMount () {
-        Axios.get("/api/data.json")
-            .then(
-                // Success
-                (response) => {
-                    let {data} = response,
-                        comments = [];
+    componentWillMount () {
+        let {comments, dispatch} = this.props;
 
-                    for (let article of data) {
-                        if (Object.prototype.hasOwnProperty.call(article, "comments")) {
-                            for (let comment of article.comments) {
-                                comments.push(comment);
-                            }
-                        }
-                    }
-
+        if (comments.size === 0) {
+            dispatch(CommentsAction.getAllComments())
+                .then(res => {
                     this.setState({
-                        "comments": comments,
                         "isLoading": false
                     });
-                },
-                // Error
-                (error) => {
+                })
+                .catch(error => {
                     console.error(error);
-                }
-            );
+                    this.setState({
+                        "isLoading": false
+                    });
+                });
+        }
     }
 
     render () {
-        let {comments, isLoading} = this.state;
+        let {comments} = this.props,
+            {isLoading} = this.state;
 
-        if (Object.keys(comments).length === 0) {
-            if (isLoading) {
-                return (
-                    <PageLoader show={isLoading} />
-                );
-            }
-            return (
-                <Error404 />
-            );
+        if (comments.size === 0) {
+            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
         }
 
         return (
             <div>
                 <Header as="h1">Comments</Header>
-                <CommentsGroup comments={comments} editForm />
+                <CommentsGroup comments={comments.toJS()} editForm />
             </div>
         );
     }
