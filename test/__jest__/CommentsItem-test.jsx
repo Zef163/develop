@@ -8,35 +8,23 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {CommentsItem} from "client/components/Comments";
+import {CommentsItem} from "components/Comments";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup() {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'CommentsItem' in js/Comments", () => {
-    // Component options for testing
-    const componentOptions = {
-        "context": {
-            // Emulate 'react-router'
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object.isRequired
-        }
+    // Component props
+    const defaultProps = {
+        "data": Object(),
+        "store": Store,
+        "dispatch": Store.dispatch
     };
 
     // Data
@@ -49,9 +37,40 @@ describe("Component 'CommentsItem' in js/Comments", () => {
         }
     };
 
+    // Emulate 'react-router'
+    const context = {
+        "context": {
+            "router": {
+                "history": {
+                    "push": () => {},
+                    "replace": () => {},
+                    "createHref": () => {}
+                }
+            }
+        },
+        "childContextTypes": {
+            "router": PropTypes.object
+        }
+    };
+
+    // Testing component
+    const component = mount(<CommentsItem {...defaultProps} />, context);
+
+    return {
+        defaultProps,
+        comment,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'CommentsItem'", () => {
+
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<CommentsItem />, componentOptions);
+        const {component, comment} = setup();
 
         // Set data
         component.setProps({
@@ -103,7 +122,7 @@ describe("Component 'CommentsItem' in js/Comments", () => {
 
     it("showing edit form", () => {
         // Component for testing
-        const component = mount(<CommentsItem />, componentOptions);
+        const {component, comment} = setup();
 
         // Set data
         component.setProps({
@@ -144,7 +163,7 @@ describe("Component 'CommentsItem' in js/Comments", () => {
 
     it("showing reply form", () => {
         // Component for testing
-        const component = mount(<CommentsItem />, componentOptions);
+        const {component, comment} = setup();
 
         // Set data
         component.setProps({
@@ -185,7 +204,7 @@ describe("Component 'CommentsItem' in js/Comments", () => {
 
     it("render empty component", () => {
         // Component for testing
-        const component = mount(<CommentsItem />);
+        const {component} = setup();
 
         // Check empty component
         expect(component.exists()).toBe(true);
@@ -193,7 +212,7 @@ describe("Component 'CommentsItem' in js/Comments", () => {
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<CommentsItem />, componentOptions);
+        const {component, comment} = setup();
 
         // Set data
         component.setProps({

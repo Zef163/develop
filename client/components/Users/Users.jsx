@@ -11,7 +11,6 @@ import Immutable from "immutable";
  * Actions
  */
 import * as UserActions from "redux/actions/UserActions";
-import * as CommentsActions from "redux/actions/CommentsActions";
 
 /**
  * Components
@@ -21,31 +20,33 @@ import {UsersItem} from "components/Users";
 import Error404 from "Error404";
 import PageLoader from "PageLoader";
 
-/**
- * Getting store
- */
-@connect(store => ({ user: store.user, comments: store.comments }))
-
-export default class Users extends React.Component {
+class Users extends React.Component {
 
     static propTypes = {
+        "dispatch": PropTypes.func,
         "match": PropTypes.oneOfType([
             PropTypes.array,
             PropTypes.object
+        ]),
+        "user": PropTypes.oneOfType([
+            PropTypes.instanceOf(Immutable.Map),
+            PropTypes.instanceOf(Immutable.List)
         ])
     };
 
     static defaultProps = {
-        "match": Object()
+        "dispatch": () => {
+            return false;
+        },
+        "match": Object(),
+        "user": new Immutable.Map()
     };
 
     constructor (props) {
         super(props);
 
         this.state = {
-            "isLoading": true,
-            "userInfo": [],
-            "comments": []
+            "isLoading": true
         };
 
         this.onUpdateComments = this.onUpdateComments.bind(this);
@@ -56,10 +57,10 @@ export default class Users extends React.Component {
             userID = this.getUserID();
 
         dispatch(UserActions.getOneUser(userID))
-            .then(res => {
+            .then(() => {
                 this.endLoading();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error(error);
                 this.endLoading();
             });
@@ -68,10 +69,10 @@ export default class Users extends React.Component {
     /**
      * Change loading status is "Loaded"
      */
-    endLoading() {
+    endLoading () {
         this.setState({
             "isLoading": false
-        })
+        });
     }
 
     /**
@@ -82,8 +83,10 @@ export default class Users extends React.Component {
 
         // Update user name
         this.props.dispatch(UserActions.changeUserName(userID, newName))
-            .then(res => {})
-            .catch(error => console.error);
+            .then()
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     /**
@@ -131,3 +134,13 @@ export default class Users extends React.Component {
     }
 
 }
+
+/**
+ * Environment
+ */
+const isTesting = process.env.NODE_ENV === "test";
+
+/**
+ * Return component by environment
+ */
+export default isTesting ? Users : connect(store => ({ user: store.user, comments: store.comments }))(Users);

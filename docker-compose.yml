@@ -1,0 +1,5 @@
+zef163-develop:
+  build: .
+  container_name: "zef163.demo"
+  ports:
+    - 3000:3000

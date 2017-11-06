@@ -18,12 +18,7 @@ import * as CommentsAction from "redux/actions/CommentsActions";
  */
 import NoPhoto from "dist/img/no-photo.png";
 
-/**
- * Getting store
- */
-@connect(store => ({ }))
-
-export default class CommentsItem extends React.Component {
+class CommentsItem extends React.Component {
 
     static propTypes = {
         "articleID": PropTypes.number,
@@ -360,3 +355,13 @@ export default class CommentsItem extends React.Component {
     }
 
 }
+
+/**
+ * Environment
+ */
+const isTesting = process.env.NODE_ENV === "test";
+
+/**
+ * Return component by environment
+ */
+export default isTesting ? CommentsItem : connect(store => ({ }))(CommentsItem);

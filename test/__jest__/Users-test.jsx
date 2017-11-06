@@ -4,43 +4,48 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {mount} from "enzyme";
+import {fromJS} from "immutable";
+
+/**
+ * Actions
+ */
+import * as UserActions from "redux/actions/UserActions";
+
+/**
+ * Reducers
+ */
+import * as UserReducer from "redux/reducers/UserReducer";
 
 /**
  * Components
  */
-import {Users} from "client/components/Users";
+import {Users} from "components/Users";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup(isLoading = false) {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'Users' in js/Users", () => {
-    // Component options for testing
-    const componentOptions = {
-        "context": {
-            // Emulate 'react-router'
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
+    // Component props
+    const defaultProps = {
+        "user": fromJS({}),
+        "store": Store,
+        "dispatch": Store.dispatch,
+        "match": {
+            "params": {
+                "id": 1
             }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object.isRequired
         }
     };
 
     // Data
-    let userInfo = {
+    let userID = 1,
+        userInfo = {
             "id": "1",
             "name": "Leanne Graham"
         },
@@ -69,11 +74,66 @@ describe("Component 'Users' in js/Users", () => {
                     "name": "Leanne Graham"
                 }
             }
-        ];
+        ],
+        user = fromJS({
+            "user_1": {
+                "userInfo": userInfo,
+                "comments": comments
+            }
+        });
+
+    // Emulate 'componentWillMount'
+    defaultProps.store.dispatch({
+        "type": "GET_ONE_USER",
+        "userID": userID,
+        "data": {
+            "userInfo": userInfo,
+            "comments": comments
+        }
+    });
+
+    // Emulate 'react-router'
+    const context = {
+        "context": {
+            "router": {
+                "history": {
+                    "push": () => {},
+                    "replace": () => {},
+                    "createHref": () => {}
+                }
+            }
+        },
+        "childContextTypes": {
+            "router": PropTypes.object
+        }
+    };
+
+    // Testing component
+    const component = mount(<Users {...defaultProps} />, context);
+
+    // Emulate 'componentWillMount'
+    component.setState({
+        "isLoading": isLoading
+    });
+
+    return {
+        defaultProps,
+        user,
+        userID,
+        userInfo,
+        comments,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'Users'", () => {
 
     it("PageLoader", () => {
         // Component for testing
-        const component = mount(<Users />);
+        const {component} = setup(true);
 
         // Check exit component "PageLoader"
         expect(component.find("PageLoader")).toHaveLength(1);
@@ -81,12 +141,7 @@ describe("Component 'Users' in js/Users", () => {
 
     it("Error404", () => {
         // Component for testing
-        const component = mount(<Users />);
-
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false
-        });
+        const {component} = setup();
 
         // Check exist component "Error404"
         expect(component.find("Error404")).toHaveLength(1);
@@ -94,13 +149,11 @@ describe("Component 'Users' in js/Users", () => {
 
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<Users />, componentOptions);
+        const {component, user} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "userInfo": userInfo,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "user": user
         });
 
         // Check exist component "Header"
@@ -136,13 +189,11 @@ describe("Component 'Users' in js/Users", () => {
 
     it("showing edit form", () => {
         // Component for testing
-        const component = mount(<Users />, componentOptions);
+        const {component, user} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "userInfo": userInfo,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "user": user
         });
 
         // Check exist component "CommentsGroup"
@@ -185,13 +236,11 @@ describe("Component 'Users' in js/Users", () => {
 
     it("submit edit form", () => {
         // Component for testing
-        const component = mount(<Users />, componentOptions);
+        const {component, user, userID} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "userInfo": userInfo,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "user": user
         });
 
         // Find edit button
@@ -220,9 +269,7 @@ describe("Component 'Users' in js/Users", () => {
         expect(submitButton).toHaveLength(1);
 
         // Find input
-        let inputForm = component.find("FormInput").findWhere(() => {
-            return true;
-        }).last();
+        let inputForm = component.find("FormInput").find("input[type='text']");
 
         // Check that found
         expect(inputForm).toHaveLength(1);
@@ -237,49 +284,63 @@ describe("Component 'Users' in js/Users", () => {
         });
         component.find("Form").simulate("submit");
 
-        let successMessage = component.find("Form > Message").findWhere((node) => {
-            return node.prop("success") === true;
-        });
+        // Simulate Users::onUpdateComments()
+        component.prop("store").dispatch(UserActions.changeUserName(userID, newName))
+            .then(() => {
+                component.setProps({
+                    "user": UserReducer.default(component.prop("user"), {
+                        "type": "CHANGE_USER_NAME",
+                        "name": newName,
+                        "userID": userID
+                    })
+                });
 
-        // Check that found
-        expect(successMessage).toHaveLength(1);
+                let successMessage = component.find("Form > Message").findWhere((node) => {
+                    return node.prop("success") === true;
+                });
 
-        // Find cancel button
-        let cancelButton = component.find("Form > Button").findWhere((node) => {
-            return node.prop("content") === "Cancel";
-        });
+                // Check that found
+                expect(successMessage).toHaveLength(1);
 
-        // Check that found
-        expect(cancelButton).toHaveLength(1);
+                // Find cancel button
+                let cancelButton = component.find("Form > Button").findWhere((node) => {
+                    return node.prop("content") === "Cancel";
+                });
 
-        // Simutale click for hidden form
-        cancelButton.simulate("click");
+                // Check that found
+                expect(cancelButton).toHaveLength(1);
 
-        // Check not rendered any forms
-        expect(component.find("Form")).toHaveLength(0);
+                // Simutale click for hidden form
+                cancelButton.simulate("click");
 
-        // Check new author title
-        expect(component.find("Header").text()).toEqual(newName);
+                // Check not rendered any forms
+                expect(component.find("Form")).toHaveLength(0);
 
-        // Check new user card title
-        expect(component.find("CardContent > CardHeader").text()).toEqual(newName);
+                // Check new author title
+                expect(component.find("Header").text()).toEqual(newName);
 
-        // Check comments
-        component.find("CommentsItem").forEach((node) => {
-            // Check new author name
-            expect(node.find("CommentContent > Link").text()).toEqual(newName);
-        });
+                // Check new user card title
+                expect(component.find("CardContent > CardHeader").text()).toEqual(newName);
+
+                // Check comments
+                component.find("CommentsItem").forEach((node) => {
+                    // Check new author name
+                    expect(node.find("CommentContent > Link").text()).toEqual(newName);
+                });
+            })
+            .catch(() => {
+                // Failed test
+                expect(false).toEqual(true);
+            });
     });
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<Users />, componentOptions);
+        const {component, user, userInfo, comments} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "userInfo": userInfo,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "user": user
         });
 
         // Check author title

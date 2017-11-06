@@ -4,28 +4,34 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {mount} from "enzyme";
+import {fromJS} from "immutable";
+
 
 /**
  * Components
  */
-import {Articles} from "client/components/Articles";
+import {Articles} from "components/Articles";
+import Store from "redux/store";
 
 /**
- * Setup
+ * Setup function
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup(isLoading = false) {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'Articles' in js/Articles", () => {
-    // Component for testing
-    const component = mount(<Articles />, {
+    // Component props
+    const defaultProps = {
+        "articles": fromJS([]),
+        "store": Store,
+        "dispatch": Store.dispatch
+    };
+
+    // Emulate 'react-router'
+    const context = {
         "context": {
-            // Emulate 'react-router'
             "router": {
                 "history": {
                     "push": () => {},
@@ -35,30 +41,55 @@ describe("Component 'Articles' in js/Articles", () => {
             }
         },
         "childContextTypes": {
-            "router": PropTypes.object.isRequired
+            "router": PropTypes.object
         }
+    };
+
+    // Testing component
+    const component = mount(<Articles {...defaultProps} />, context);
+
+    // Emulate 'componentWillMount'
+    component.setState({
+        "isLoading": isLoading
+    });
+
+    return {
+        defaultProps,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'Articles'", () => {
+
+    it("PageLoader", () => {
+        // Component for testing
+        const {component} = setup(true);
+
+        // Check exit component "PageLoader"
+        expect(component.find("PageLoader")).toHaveLength(1);
     });
 
     it("DOM structure", () => {
-        // Check exist component "Header"
+        // Component for testing
+        const {component} = setup();
+
+        // Check component "Header"
         expect(component.find("Header")).toHaveLength(1);
+        expect(component.find("Header").text()).toEqual("Articles");
 
-        // Check exist component "ArticlesGroup"
+        // Check component "ArticlesGroup"
         expect(component.find("ArticlesGroup")).toHaveLength(1);
-    });
-
-    it("render empty component", () => {
-        // Check exist tag H1
-        expect(component.find("h1.header")).toHaveLength(1);
-
-        // Check empty elements
-        expect(component.find("p").at(0).text()).toEqual("Articles not found");
-
-        // Check is render one DOM element in root
-        expect(component).toHaveLength(1);
+        expect(component.find("ArticlesGroup").text()).toEqual("Articles not found");
     });
 
     it("render not empty component", () => {
+        // Component for testing
+        const {component} = setup();
+
+        // Default props
         let article = {
             "id": "1",
             "author": {
@@ -70,9 +101,9 @@ describe("Component 'Articles' in js/Articles", () => {
             "comments": []
         };
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "articles": [article]
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "articles": fromJS([article])
         });
 
         // Check title article

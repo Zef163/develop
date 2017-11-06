@@ -8,24 +8,34 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {UsersItem} from "client/components/Users";
+import {UsersItem} from "components/Users";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup() {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'UsersItem' in js/Users", () => {
-    // Component options for testing
-    const componentOptions = {
+    // Component props
+    const defaultProps = {
+        "info": Object(),
+        "store": Store,
+        "dispatch": Store.dispatch
+    };
+
+    // Data
+    let userInfo = {
+        "id": "1",
+        "name": "Leanne Graham"
+    };
+
+    // Emulate 'react-router'
+    const context = {
         "context": {
-            // Emulate 'react-router'
             "router": {
                 "history": {
                     "push": () => {},
@@ -35,19 +45,28 @@ describe("Component 'UsersItem' in js/Users", () => {
             }
         },
         "childContextTypes": {
-            "router": PropTypes.object.isRequired
+            "router": PropTypes.object
         }
     };
 
-    // Data
-    let userInfo = {
-        "id": "1",
-        "name": "Leanne Graham"
+    // Testing component
+    const component = mount(<UsersItem {...defaultProps} />, context);
+
+    return {
+        defaultProps,
+        userInfo,
+        component
     };
+}
+
+/**
+ * Test
+ */
+describe("Component 'UsersItem'", () => {
 
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<UsersItem />, componentOptions);
+        const {component, userInfo} = setup();
 
         // Set data
         component.setProps({
@@ -75,7 +94,7 @@ describe("Component 'UsersItem' in js/Users", () => {
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<UsersItem />, componentOptions);
+        const {component, userInfo} = setup();
 
         // Set data
         component.setProps({

@@ -8,20 +8,25 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {CommentsGroup} from "client/components/Comments";
+import {CommentsGroup} from "components/Comments";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup() {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'CommentsGroup' in js/Comments", () => {
+    // Component props
+    const defaultProps = {
+        "comments": Object(),
+        "store": Store,
+        "dispatch": Store.dispatch
+    };
+
     // Data
     let comments = [
         {
@@ -50,10 +55,9 @@ describe("Component 'CommentsGroup' in js/Comments", () => {
         }
     ];
 
-    // Component options for testing
-    const componentOptions = {
+    // Emulate 'react-router'
+    const context = {
         "context": {
-            // Emulate 'react-router'
             "router": {
                 "history": {
                     "push": () => {},
@@ -63,13 +67,28 @@ describe("Component 'CommentsGroup' in js/Comments", () => {
             }
         },
         "childContextTypes": {
-            "router": PropTypes.object.isRequired
+            "router": PropTypes.object
         }
     };
 
+    // Testing component
+    const component = mount(<CommentsGroup {...defaultProps} />, context);
+
+    return {
+        defaultProps,
+        comments,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'CommentsGroup'", () => {
+
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<CommentsGroup />, componentOptions);
+        const {component, comments} = setup();
 
         // Set data
         component.setProps({
@@ -102,7 +121,7 @@ describe("Component 'CommentsGroup' in js/Comments", () => {
 
     it("render empty component", () => {
         // Component for testing
-        const component = mount(<CommentsGroup />);
+        const {component} = setup();
 
         // Check empty elements
         expect(component.find("CommentsGroup").text()).toEqual("Comments not found");
@@ -113,7 +132,7 @@ describe("Component 'CommentsGroup' in js/Comments", () => {
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<CommentsGroup />, componentOptions);
+        const {component, comments} = setup();
 
         // Set data
         component.setProps({

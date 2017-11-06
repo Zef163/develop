@@ -4,39 +4,28 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {mount} from "enzyme";
+import {fromJS} from "immutable";
 
 /**
  * Components
  */
-import {Comments} from "client/components/Comments";
+import {Comments} from "components/Comments";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup(isLoading = false) {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'Comments' in js/Comments", () => {
-    // Component options for testing
-    const componentOptions = {
-        "context": {
-            // Emulate 'react-router'
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object.isRequired
-        }
+    // Component props
+    const defaultProps = {
+        "comments": fromJS([]),
+        "store": Store,
+        "dispatch": Store.dispatch
     };
 
     // Data
@@ -67,9 +56,45 @@ describe("Component 'Comments' in js/Comments", () => {
         }
     ];
 
+    // Emulate 'react-router'
+    const context = {
+        "context": {
+            "router": {
+                "history": {
+                    "push": () => {},
+                    "replace": () => {},
+                    "createHref": () => {}
+                }
+            }
+        },
+        "childContextTypes": {
+            "router": PropTypes.object
+        }
+    };
+
+    // Testing component
+    const component = mount(<Comments {...defaultProps} />, context);
+
+    // Emulate 'componentWillMount'
+    component.setState({
+        "isLoading": isLoading
+    });
+
+    return {
+        defaultProps,
+        comments,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'Comments'", () => {
+
     it("PageLoader", () => {
         // Component for testing
-        const component = mount(<Comments />);
+        const {component} = setup(true);
 
         // Check exit component "PageLoader"
         expect(component.find("PageLoader")).toHaveLength(1);
@@ -77,12 +102,7 @@ describe("Component 'Comments' in js/Comments", () => {
 
     it("Error404", () => {
         // Component for testing
-        const component = mount(<Comments />);
-
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false
-        });
+        const {component} = setup();
 
         // Check exist component "Error404"
         expect(component.find("Error404")).toHaveLength(1);
@@ -90,12 +110,11 @@ describe("Component 'Comments' in js/Comments", () => {
 
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<Comments />, componentOptions);
+        const {component, comments} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "comments": fromJS(comments)
         });
 
         // Check exist component "Header"
@@ -127,12 +146,12 @@ describe("Component 'Comments' in js/Comments", () => {
     });
 
     it("render not empty component", () => {
-        const component = mount(<Comments />, componentOptions);
+        // Component for testing
+        const {component, comments} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "comments": comments
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "comments": fromJS(comments)
         });
 
         // Check comments

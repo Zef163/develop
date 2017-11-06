@@ -16,12 +16,7 @@ import {CommentsGroup} from "components/Comments";
 import Error404 from "Error404";
 import PageLoader from "PageLoader";
 
-/**
- * Getting store
- */
-@connect(store => ({ comments: store.comments }))
-
-export default class Comments extends React.Component {
+class Comments extends React.Component {
 
     constructor (props) {
         super(props);
@@ -67,3 +62,13 @@ export default class Comments extends React.Component {
     }
 
 }
+
+/**
+ * Environment
+ */
+const isTesting = process.env.NODE_ENV === "test";
+
+/**
+ * Return component by environment
+ */
+export default isTesting ? Comments : connect(store => ({ comments: store.comments }))(Comments);

@@ -16,12 +16,7 @@ import * as ArticleActions from "redux/actions/ArticleActions";
 import {ArticlesGroup} from "components/Articles";
 import PageLoader from "PageLoader";
 
-/**
- * Getting store
- */
-@connect(store => ({ articles: store.articles }))
-
-export default class Articles extends React.Component {
+class Articles extends React.Component {
 
     constructor (props) {
         super(props);
@@ -67,3 +62,13 @@ export default class Articles extends React.Component {
     }
 
 }
+
+/**
+ * Environment
+ */
+const isTesting = process.env.NODE_ENV === "test";
+
+/**
+ * Return component by environment
+ */
+export default isTesting ? Articles : connect(store => ({ articles: store.articles }))(Articles);

@@ -21,12 +21,7 @@ import Error404 from "Error404";
 import PageLoader from "PageLoader";
 import NoPhoto from "dist/img/no-photo.png";
 
-/**
- * Getting store
- */
-@connect(store => ({ articles: store.articles }))
-
-export default class ArticlesOne extends React.Component {
+class ArticlesOne extends React.Component {
 
     static propTypes = {
         "match": PropTypes.oneOfType([
@@ -109,3 +104,13 @@ export default class ArticlesOne extends React.Component {
     }
 
 }
+
+/**
+ * Environment
+ */
+const isTesting = process.env.NODE_ENV === "test";
+
+/**
+ * Return component by environment
+ */
+export default isTesting ? ArticlesOne : connect(store => ({ articles: store.articles }))(ArticlesOne);

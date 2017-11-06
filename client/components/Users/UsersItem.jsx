@@ -96,18 +96,6 @@ export default class UsersItem extends React.Component {
         successFunc({
             "success": true
         });
-
-        // // Hide notification messages and show loader
-        // this.setState({
-        //     "errorMessage": "",
-        //     "loadingForm": true,
-        //     "successMessage": ""
-        // });
-        //
-        // // Send PUT request
-        // Axios.put(`/api/user/${info.id}`, {
-        //     "name": userName
-        // }).then(successFunc, errorFunc);
     }
 
     /**

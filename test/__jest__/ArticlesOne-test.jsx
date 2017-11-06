@@ -4,38 +4,32 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {mount} from "enzyme";
+import {fromJS} from "immutable";
 
 /**
  * Components
  */
-import {ArticlesOne} from "client/components/Articles";
+import {ArticlesOne} from "components/Articles";
+import Store from "redux/store";
 
 /**
  * Setup
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup(isLoading = false) {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'ArticlesOne' in js/Articles", () => {
-    // Component options for testing
-    const componentOptions = {
-        "context": {
-            // Emulate 'react-router'
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
+    // Component props
+    const defaultProps = {
+        "articles": fromJS({}),
+        "store": Store,
+        "dispatch": Store.dispatch,
+        "match": {
+            "params": {
+                "id": 2
             }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object.isRequired
         }
     };
 
@@ -76,9 +70,45 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
         ]
     };
 
+    // Emulate 'react-router'
+    const context = {
+        "context": {
+            "router": {
+                "history": {
+                    "push": () => {},
+                    "replace": () => {},
+                    "createHref": () => {}
+                }
+            }
+        },
+        "childContextTypes": {
+            "router": PropTypes.object
+        }
+    };
+
+    // Testing component
+    const component = mount(<ArticlesOne {...defaultProps} />, context);
+
+    // Emulate 'componentWillMount'
+    component.setState({
+        "isLoading": isLoading
+    });
+
+    return {
+        defaultProps,
+        article,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'ArticlesOne'", () => {
+
     it("PageLoader", () => {
         // Component for testing
-        const component = mount(<ArticlesOne />);
+        const {component} = setup(true);
 
         // Check exit component "PageLoader"
         expect(component.find("PageLoader")).toHaveLength(1);
@@ -86,12 +116,7 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
 
     it("Error404", () => {
         // Component for testing
-        const component = mount(<ArticlesOne />);
-
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false
-        });
+        const {component} = setup();
 
         // Check exist component "Error404"
         expect(component.find("Error404")).toHaveLength(1);
@@ -99,12 +124,11 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
 
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<ArticlesOne />, componentOptions);
+        const {component, article} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "article": article
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "articles": fromJS([article])
         });
 
         // Check exist component "Header"
@@ -133,12 +157,11 @@ describe("Component 'ArticlesOne' in js/Articles", () => {
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<ArticlesOne />, componentOptions);
+        const {component, article} = setup();
 
-        // Emulate 'componentDidMount'
-        component.setState({
-            "isLoading": false,
-            "article": article
+        // Emulate 'componentWillMount'
+        component.setProps({
+            "articles": fromJS([article])
         });
 
         // Check title

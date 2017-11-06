@@ -8,45 +8,27 @@ import {mount} from "enzyme";
 /**
  * Components
  */
-import {ArticlesGroup} from "client/components/Articles";
+import {ArticlesGroup} from "components/Articles";
+import Store from "redux/store";
 
 /**
- * Setup
+ * Setup function
  */
-// Replace 'window.console.error' to custom function
-console.error = jest.fn((warn) => {
-    throw new Error(warn);
-});
+function setup() {
+    // Replace 'window.console.error' to custom function
+    console.error = jest.fn((warn) => {
+        throw new Error(warn);
+    });
 
-/**
- * Test
- */
-describe("Component 'ArticlesGroup' in js/Articles", () => {
-    // Component options for testing
-    const componentOptions = {
-        "context": {
-            // Emulate 'react-router'
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            },
-            // Default props
-            "elements": Object()
-        },
-        "childContextTypes": {
-            "router": PropTypes.object.isRequired,
-            "elements": PropTypes.oneOfType([
-                PropTypes.array,
-                PropTypes.object
-            ])
-        }
+    // Component props
+    const defaultProps = {
+        "elements": Object(),
+        "store": Store,
+        "dispatch": Store.dispatch
     };
 
     // Data
-    let articles = [
+    const articles = [
         {
             "id": "1",
             "author": {
@@ -69,9 +51,40 @@ describe("Component 'ArticlesGroup' in js/Articles", () => {
         }
     ];
 
+    // Emulate 'react-router'
+    const context = {
+        "context": {
+            "router": {
+                "history": {
+                    "push": () => {},
+                    "replace": () => {},
+                    "createHref": () => {}
+                }
+            }
+        },
+        "childContextTypes": {
+            "router": PropTypes.object
+        }
+    };
+
+    // Testing component
+    const component = mount(<ArticlesGroup {...defaultProps} />, context);
+
+    return {
+        defaultProps,
+        articles,
+        component
+    };
+}
+
+/**
+ * Test
+ */
+describe("Component 'ArticlesGroup'", () => {
+
     it("DOM structure", () => {
         // Component for testing
-        const component = mount(<ArticlesGroup />, componentOptions);
+        const {component, articles} = setup();
 
         // Check not exist component "Item.Group"
         expect(component.find("ItemGroup")).toHaveLength(0);
@@ -108,7 +121,7 @@ describe("Component 'ArticlesGroup' in js/Articles", () => {
 
     it("render empty component", () => {
         // Component for testing
-        const component = mount(<ArticlesGroup />, componentOptions);
+        const {component} = setup();
 
         // Check empty elements
         expect(component.first("p").text()).toEqual("Articles not found");
@@ -119,7 +132,7 @@ describe("Component 'ArticlesGroup' in js/Articles", () => {
 
     it("render not empty component", () => {
         // Component for testing
-        const component = mount(<ArticlesGroup />, componentOptions);
+        const {component, articles} = setup();
 
         // Set data
         component.setProps({

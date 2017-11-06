@@ -10,9 +10,8 @@ module.exports = {
     "verbose": true,
     "rootDir": __dirname,
     "modulePaths": [
-        path.join(__dirname, "src"),
-        path.join(__dirname, "src", "js"),
-        path.join(__dirname, "src", "js", "components")
+        path.join(__dirname, "client"),
+        path.join(__dirname, "client", "components")
     ],
     "moduleFileExtensions": [
         "js",
