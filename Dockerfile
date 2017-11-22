@@ -8,13 +8,12 @@ RUN apt-get update && apt-get install -y npm
 WORKDIR /var/www/application/
 
 # Copy application to app directory
-COPY . /var/www/application/
-
-# Install app dependencies
-RUN npm install
+COPY . .
 
 # Informs Docker that the container listens 3000 port
 EXPOSE 3000
 
-# Run application
-CMD ["npm", "start"]
+# Install app dependencies and run application
+COPY ./docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
