@@ -1,7 +1,7 @@
 # Develop
 This is demo NPM package.
 
-## Get started from used Git
+## Get started using Git
 1. Clone a remote repository and go to folder
 ```console
 $ git clone https://github.com/Zef163/develop.git 
@@ -24,7 +24,7 @@ $ npm install --only=dev
 
 `$ npm run test` - Run all tests
 
-## Get started from used Docker
+## Get started using Docker
 1. Install [Docker Community Edition](https://docs.docker.com/engine/installation/)
 
 2. Install [Docker Compose](https://docs.docker.com/compose/install/)
@@ -42,7 +42,7 @@ $ [sudo] docker-compose up
 
 5. Open [http://localhost:3000/](http://localhost:3000/) in your browser for start use application
 
-## Get started from used Node.js and NPM
+## Get started using Node.js and NPM
 1. Install [Node.js LTS Version](https://nodejs.org/en/download/)
 
 2. Install NPM package and open application folder
