@@ -1,88 +1,68 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 import {Image, Header, Icon} from "semantic-ui-react";
 import {connect} from "react-redux";
-import Immutable from "immutable";
 
 /**
  * Actions
  */
-import * as ArticleActions from "redux/actions/ArticleActions";
+import {getOneArticle as getOneArticleAction} from "redux/actions/ArticleActions";
 
 /**
  * Components
  */
 import {CommentsGroup} from "components/Comments";
-import Error404 from "Error404";
-import PageLoader from "PageLoader";
+import {Error404} from "components/Error404";
+import {PageLoader} from "components/PageLoader";
 import NoPhoto from "dist/img/no-photo.png";
 
-class ArticlesOne extends React.Component {
+export class ArticlesOne extends Component {
 
     static propTypes = {
-        "match": PropTypes.oneOfType([
+        match: PropTypes.oneOfType([
             PropTypes.array,
-            PropTypes.object
-        ])
+            PropTypes.object,
+        ]),
+        getOneArticle: PropTypes.func,
+        articles: PropTypes.array,
+        isLoaded: PropTypes.bool,
     };
 
     static defaultProps = {
-        "match": Object()
+        match: Object(),
     };
 
-    constructor (props) {
+    constructor(props) {
         super(props);
-
-        this.state = {
-            "isLoading": true
-        };
     }
 
-    componentWillMount () {
-        let {dispatch} = this.props,
-            articleID = this.getArticleID();
+    componentDidMount() {
+        const {getOneArticle} = this.props;
 
-        dispatch(ArticleActions.getOneArticles(articleID))
-            .then(res => {
-                this.setState({
-                    "isLoading": false
-                });
-            })
-            .catch(error => {
-                console.error(error);
-                this.setState({
-                    "isLoading": false
-                });
-            });
+        const articleID = this.getArticleID();
+        getOneArticle(articleID);
     }
 
     /**
      * Function for get article identification number
      */
-    getArticleID () {
-        let {params} = this.props.match,
-            articleID = 0;
-
-        if (Object.prototype.hasOwnProperty.call(params, "id")) {
-            articleID = params.id;
-        }
-
-        return parseInt(articleID);
+    getArticleID() {
+        const {params} = this.props.match;
+        return Number(params.id || 0);
     }
 
-    render () {
-        let {articles} = this.props,
-            articleID = this.getArticleID(),
-            article = articles.filter(item => Number(item.get("id")) === articleID).first() || Immutable.fromJS({}),
-            comments = article.getIn(["comments"], Immutable.fromJS([])),
-            {isLoading} = this.state;
+    render() {
+        const {articles, isLoaded} = this.props;
+        const articleID = this.getArticleID();
+        const article = articles.find(item => Number(item.id) === articleID) || {};
+        const comments = article.comments || [];
 
-        if (article.size === 0) {
-            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
+        if (Object.keys(article).length === 0) {
+            return isLoaded ? <Error404 /> : <PageLoader show />;
         }
 
         return (
@@ -91,14 +71,14 @@ class ArticlesOne extends React.Component {
                     <Link to="/articles/">
                         <Icon name="arrow left" />
                     </Link>
-                    {article.getIn(["title"], "")}
+                    {article.title || ''}
                 </Header>
                 <Image size="large" src={NoPhoto} />
-                <p>{article.getIn(["text"], "")}</p>
-                <p>Author: {article.getIn(["author", "name"], "")}</p>
+                <p>{article.text || ''}</p>
+                <p>Author: {article?.author?.name || ''}</p>
 
                 <Header as="h2" dividing>Comments</Header>
-                <CommentsGroup articleID={articleID} comments={comments.toJS()} editForm form replyForm />
+                <CommentsGroup articleID={articleID} comments={comments} editForm form replyForm />
             </div>
         );
     }
@@ -106,11 +86,22 @@ class ArticlesOne extends React.Component {
 }
 
 /**
- * Environment
+ * Fetch store data to props
+ * @param store - Application store
  */
-const isTesting = process.env.NODE_ENV === "test";
+export const mapStateToProps = store => ({
+    articles: store.articles.items,
+    isLoaded: store.articles.isLoaded,
+});
 
 /**
- * Return component by environment
+ * Bind action creators
  */
-export default isTesting ? ArticlesOne : connect(store => ({ articles: store.articles }))(ArticlesOne);
+export const mapDispatchToProps = {
+    getOneArticle: getOneArticleAction,
+};
+
+/**
+ * Connected component
+ */
+export const ArticlesOneConnected = connect(mapStateToProps, mapDispatchToProps)(ArticlesOne);

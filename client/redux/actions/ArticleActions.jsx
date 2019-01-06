@@ -2,42 +2,32 @@
  * Libraries
  */
 import Axios from "axios";
+import {createActions} from "redux-actions";
 
 /**
- * Get info of one user
+ * Article actions
  */
-export function getAllArticles () {
-    return async dispatch => {
-        try {
-            const {data} = await Axios.get("/api/data.json");
+export const {articles: {getAllArticles, getOneArticle}} = createActions({
+    ARTICLES: {
 
-            dispatch({
-                "type": "GET_ALL_ARTICLES",
-                "data": data
-            });
+        /**
+         * Get articles list
+         * @returns {AxiosPromise<any>} Articles list
+         */
+        GET_ALL_ARTICLES: () => Axios.get("/api/data.json"),
 
-        } catch (error) {
-            console.error(error);
-        }
-    };
-}
-
-export function getOneArticles (articleID) {
-    return async dispatch => {
-        try {
-            const {data} = await Axios.get("/api/data.json");
-
-            let articles = data.filter((item) => {
-                return parseInt(item.id) === parseInt(articleID);
-            });
-
-            dispatch({
-                "type": "GET_ONE_ARTICLE",
-                "articleID": articleID,
-                "data": articles.shift()
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    };
-}
+        /**
+         *
+         * @param {number} articleID - Article identification
+         * @returns {{}}
+         * @constructor
+         */
+        GET_ONE_ARTICLE: articleID => async () => {
+            const requestData = await Axios.get("/api/data.json");
+            return {
+                articleID,
+                requestData,
+            };
+        },
+    },
+});

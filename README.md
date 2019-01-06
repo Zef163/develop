@@ -24,6 +24,8 @@ $ npm install --only=dev
 
 `$ npm run test` - Run all tests
 
+`$ npm run eslint` - Check errors
+
 ## Get started using Docker
 1. Install [Docker Community Edition](https://docs.docker.com/engine/installation/)
 

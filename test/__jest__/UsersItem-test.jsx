@@ -2,109 +2,83 @@
  * Libraries
  */
 import React from "react";
-import PropTypes from "prop-types";
-import {mount} from "enzyme";
+import {mount, configure} from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 
 /**
- * Components
+ * Component for testing
  */
 import {UsersItem} from "components/Users";
-import Store from "redux/store";
 
 /**
- * Setup
+ * Emulate React.Router
  */
-function setup() {
-    // Replace 'window.console.error' to custom function
-    console.error = jest.fn((warn) => {
-        throw new Error(warn);
-    });
+configure({
+    adapter: new Adapter(),
+});
+
+// Fixture
+const userInfo = {
+    id: "1",
+    name: "Leanne Graham",
+};
+
+let props;
+let wrapper;
+beforeEach(() => {
+    // Mock 'window.console.error'
+    console.error = jest.fn();
 
     // Component props
-    const defaultProps = {
-        "info": Object(),
-        "store": Store,
-        "dispatch": Store.dispatch
-    };
-
-    // Data
-    let userInfo = {
-        "id": "1",
-        "name": "Leanne Graham"
-    };
-
-    // Emulate 'react-router'
-    const context = {
-        "context": {
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object
-        }
+    props = {
+        articles: [],
+        getAllArticles: jest.fn(),
+        isLoaded: false,
     };
 
     // Testing component
-    const component = mount(<UsersItem {...defaultProps} />, context);
-
-    return {
-        defaultProps,
-        userInfo,
-        component
-    };
-}
+    wrapper = mount(<UsersItem {...props} />);
+});
 
 /**
  * Test
  */
 describe("Component 'UsersItem'", () => {
-
     it("DOM structure", () => {
-        // Component for testing
-        const {component, userInfo} = setup();
-
         // Set data
-        component.setProps({
-            "info": userInfo
+        wrapper.setProps({
+            info: userInfo,
         });
 
         // Check exist component "Card"
-        expect(component.find("Card")).toHaveLength(1);
+        expect(wrapper.find("Card")).toHaveLength(1);
 
         // Check exist component "Image"
-        expect(component.find("Card > Image")).toHaveLength(1);
+        expect(wrapper.find("Card Image")).toHaveLength(1);
 
         // Check exist component "CardContent"
-        expect(component.find("Card > CardContent")).toHaveLength(3);
+        expect(wrapper.find("Card CardContent")).toHaveLength(3);
 
         // Check exist component "CardHeader"
-        expect(component.find("Card > CardContent > CardHeader")).toHaveLength(1);
+        expect(wrapper.find("Card CardContent CardHeader")).toHaveLength(1);
 
         // Check exist component "CardMeta"
-        expect(component.find("Card > CardContent > CardMeta")).toHaveLength(1);
+        expect(wrapper.find("Card CardContent CardMeta")).toHaveLength(1);
 
         // Check exist component "CardDescription"
-        expect(component.find("Card > CardContent > CardDescription")).toHaveLength(1);
+        expect(wrapper.find("Card CardContent CardDescription")).toHaveLength(1);
     });
 
     it("render not empty component", () => {
-        // Component for testing
-        const {component, userInfo} = setup();
-
         // Set data
-        component.setProps({
-            "info": userInfo
+        wrapper.setProps({
+            info: userInfo,
         });
 
         // Check user name
-        expect(component.find("CardContent > CardHeader").text()).toEqual(userInfo.name);
+        expect(wrapper.find("CardContent CardHeader").text()).toEqual(userInfo.name);
 
         // Check user description
-        expect(component.find("CardContent > CardDescription").text()).toEqual(`${userInfo.name} is a musician living in Nashville.`);
+        expect(wrapper.find("CardContent CardDescription").text()).toEqual(`${userInfo.name} is a musician living in Nashville.`);
     });
 });

@@ -1,49 +1,97 @@
 /**
  * Libraries
  */
-import {Map, fromJS} from "immutable";
+import {handleActions} from "redux-actions";
+import {FULFILLED} from 'redux-promise-middleware';
 
 /**
- * User reducer
- * @param state
- * @param action
- * @returns Immutable.Map
+ * Actions
  */
-export default function reducer (state = new Map(), action) {
-    switch (action.type) {
-        case "GET_ALL_ARTICLES": {
-            return fromJS(action.data);
-        }
-        case "GET_ONE_ARTICLE": {
-            let haveArticle = state.filter(item => Number(item.get("id")) === Number(action.articleID));
-            return haveArticle.size !== 0 ? state : state.push(fromJS(action.data));
-        }
-        case "CHANGE_USER_NAME": {
-            state.map((article, index) => {
-                if (Number(article.getIn(["author", "id"])) === Number(action.userID)) {
-                    state = state.setIn([index, "author", "name"], action.name);
-                }
+import {getAllArticles, getOneArticle} from "redux/actions/ArticleActions";
+import {editComment} from "redux/actions/CommentsActions";
+import {changeUserName} from "redux/actions/UserActions";
 
-                article.get("comments").map((comment, key) => {
-                    if (Number(comment.getIn(["commenter", "id"])) === Number(action.userID)) {
-                        state = state.setIn([index, "comments", key, "commenter", "name"], action.name);
-                    }
-                });
-            });
-            return state;
-        }
-        case "EDIT_COMMENT": {
-            state.map((article, index) => {
-                article.get("comments").map((comment, key) => {
-                    if (Number(comment.get("id")) === Number(action.commentID)) {
-                        state = state.setIn([index, "comments", key, "text"], action.text);
-                    }
-                });
-            });
-            return state;
-        }
-        default: {
-            return state;
-        }
-    }
-}
+const defaultState = {
+    items: [],
+    isLoaded: false,
+};
+
+/**
+ * Article reducer
+ */
+export const ArticleReducer = handleActions(
+    {
+        /**
+         * Get all articles
+         * @param state - State of reducer
+         * @param payload - Payload data
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [`${getAllArticles}_${FULFILLED}`]: (state, {payload}) => ({
+            items: payload.data,
+            isLoaded: true,
+        }),
+
+        /**
+         * Get one article
+         * @param state - State of reducer
+         * @param payload - Payload data
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [`${getOneArticle}_${FULFILLED}`]:  (state, {payload}) => {
+            const haveArticle = state.items.some(item => Number(item.id) === Number(payload.articleID));
+            const loadedData = payload.requestData.data.find(item => Number(item.id) === Number(payload.articleID));
+            return haveArticle ? state : {...state, items: [...state.items, loadedData]};
+        },
+
+        /**
+         * Edit comment of article
+         * @param state - State of reducer
+         * @param {number} commentID - Comment identification
+         * @param {string} text - New text of comment
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [editComment]: (state, {payload: {commentID, text}}) => ({
+            ...state,
+            items: state.items.map(article => ({
+                ...article,
+                comments: article.comments.map(comment => ({
+                    ...comment,
+                    text: Number(comment.id) === Number(commentID) ? text : comment.text,
+                })),
+            })),
+        }),
+
+        /**
+         * Change user name
+         * @param state - State of reducer
+         * @param {number} id - User identification
+         * @param {string} name - New user name
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [changeUserName]: (state, {payload: {id, name}}) => ({
+            ...state,
+            items: state.items.map(article => {
+                const author = {
+                    ...article.author,
+                    name: Number(article.author.id) === Number(id) ? name : article.author.name,
+                };
+
+                const comments = article.comments.map(comment => ({
+                    ...comment,
+                    commenter: {
+                        ...comment.commenter,
+                        name: Number(comment.commenter.id) === Number(id) ? name : comment.commenter.name,
+                    },
+                }));
+
+                return {
+                    ...article,
+                    author,
+                    comments,
+                };
+            }),
+        }),
+    },
+    defaultState,
+);

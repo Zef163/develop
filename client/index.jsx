@@ -3,7 +3,7 @@
  */
 import React from "react";
 import ReactDOM from "react-dom";
-import Routes from "./redux/routes";
+import {RoutesConnected} from "./redux/routes";
 import {Provider} from "react-redux";
 import Store from "./redux/store";
 
@@ -29,7 +29,7 @@ import "./less/styles.less";
  */
 ReactDOM.render(
     <Provider store={Store}>
-        <Routes />
+        <RoutesConnected />
     </Provider>,
     document.getElementById("root")
 );

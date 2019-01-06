@@ -2,46 +2,22 @@
  * Libraries
  */
 import Axios from "axios";
+import {createActions} from "redux-actions";
 
-/**
- * Get info of one user
- */
-export function getAllComments () {
-    return async dispatch => {
-        try {
-            const {data} = await Axios.get("/api/data.json");
+export const {comments: {getAllComments, editComment}} = createActions({
+    COMMENTS: {
+        /**
+         * Get all comments
+         * @returns {AxiosPromise<any>}
+         */
+        GET_ALL_COMMENTS: () => Axios.get("/api/data.json"),
 
-            let comments = [];
-
-            for (let article of data) {
-                if (Object.prototype.hasOwnProperty.call(article, "comments")) {
-                    for (let comment of article.comments) {
-                        comments.push(comment);
-                    }
-                }
-            }
-
-            dispatch({
-                "type": "GET_ALL_COMMENTS",
-                "data": comments
-            });
-
-        } catch (error) {
-            console.error(error);
-        }
-    };
-}
-
-export function editComment (commentID = 0, text = "") {
-    return async dispatch => {
-        try {
-            dispatch({
-                "type": "EDIT_COMMENT",
-                "commentID": Number(commentID || 0),
-                "text": String(text || "")
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    };
-}
+        /**
+         * Edit one comment
+         * @param {number} commentID - Comment identification
+         * @param {string} text - New text of comment
+         * @returns {{commentID: number, text: string}}
+         */
+        EDIT_COMMENT: (commentID = 0, text = "") => ({commentID, text}),
+    },
+});

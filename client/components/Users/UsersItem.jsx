@@ -1,35 +1,41 @@
-import React from "react";
+/**
+ * Libraries
+ */
+import React, {Component} from "react";
 import PropTypes from "prop-types";
-import Axios from "axios";
 import {Card, Image, Button, Form, Message} from "semantic-ui-react";
+
+/**
+ * Components
+ */
 import NoPhoto from "dist/img/no-photo.png";
 
-export default class UsersItem extends React.Component {
+/**
+ * Users item component
+ */
+export class UsersItem extends Component {
 
     static propTypes = {
-        "info": PropTypes.oneOfType([
+        info: PropTypes.oneOfType([
             PropTypes.array,
-            PropTypes.object
+            PropTypes.object,
         ]),
-        "updateComments": PropTypes.func
+        updateComments: PropTypes.func,
     };
 
     static defaultProps = {
-        "info": Object(),
-        "updateComments": () => {
-            return false;
-        }
+        info: Object(),
     };
 
-    constructor (props) {
+    constructor(props) {
         super(props);
 
         this.state = {
-            "errorMessage": "",
-            "loadingForm": false,
-            "successMessage": "",
-            "showForm": false,
-            "userName": props.info.name
+            errorMessage: "",
+            loadingForm: false,
+            successMessage: "",
+            showForm: false,
+            userName: props.info.name,
         };
 
         this.onShowForm = this.onShowForm.bind(this);
@@ -40,72 +46,74 @@ export default class UsersItem extends React.Component {
     /**
      * Function for open editing form
      */
-    onShowForm () {
+    onShowForm() {
         this.setState({
-            "errorMessage": "",
-            "successMessage": "",
-            "showForm": true
+            errorMessage: "",
+            successMessage: "",
+            showForm: true,
         });
     }
 
     /**
      * Function for close editing form
      */
-    onHideForm () {
+    onHideForm() {
         this.setState({
-            "errorMessage": "",
-            "successMessage": "",
-            "showForm": false
+            errorMessage: "",
+            successMessage: "",
+            showForm: false,
         });
     }
 
     /**
      * Function for send editing form
      */
-    onSubmitForm () {
-        let {info, updateComments} = this.props,
-            {userName} = this.state,
-            // Function at error send request
-            errorFunc = (error) => {
-                this.setState({
-                    "errorMessage": error.message,
-                    "loadingForm": false
-                });
-            },
-            // Function at success send request
-            successFunc = (response) => {
-                if (response.success !== true) {
-                    errorFunc(Error("User not edited"));
-                    return;
-                }
+    onSubmitForm() {
+        const {updateComments} = this.props;
+        const {userName} = this.state;
 
-                // Update parent component
-                updateComments(userName);
+        // Function at error send request
+        const errorFunc = error => {
+            this.setState({
+                errorMessage: error.message,
+                loadingForm: false,
+            });
+        };
 
-                this.setState({
-                    "loadingForm": false,
-                    "successMessage": "User is edited"
-                });
-                setTimeout(() => {
-                    this.onHideForm();
-                }, 2000);
-            };
+        // Function at success send request
+        const successFunc = response => {
+            if (response.success !== true) {
+                errorFunc(Error("User not edited"));
+                return;
+            }
+
+            // Update parent component
+            updateComments(userName);
+
+            this.setState({
+                loadingForm: false,
+                successMessage: "User is edited",
+            });
+            setTimeout(() => {
+                this.onHideForm();
+            }, 2000);
+        };
 
         // Update parent component
         updateComments(userName);
         successFunc({
-            "success": true
+            success: true,
         });
     }
 
     /**
      * Function for render editing form
      */
-    renderForm () {
-        let {userName, showForm, loadingForm, errorMessage, successMessage} = this.state,
-            success = String(successMessage).length > 0,
-            error = String(errorMessage).length > 0,
-            loading = Boolean(loadingForm);
+    renderForm() {
+        const {userName, showForm, loadingForm, errorMessage, successMessage} = this.state;
+        const success = String(successMessage).length > 0;
+        const error = String(errorMessage).length > 0;
+        const loading = Boolean(loadingForm);
 
         if (showForm === false) {
             return "";
@@ -117,9 +125,9 @@ export default class UsersItem extends React.Component {
                     defaultValue={userName}
                     hidden={success}
                     label="User name"
-                    onChange={(obj) => {
+                    onChange={obj => {
                         this.setState({
-                            "userName": obj.target.value
+                            userName: obj.target.value,
                         });
                     }}
                 />
@@ -153,9 +161,9 @@ export default class UsersItem extends React.Component {
         );
     }
 
-    render () {
-        let {info} = this.props,
-            {showForm} = this.state;
+    render() {
+        const {info} = this.props;
+        const {showForm} = this.state;
 
         // Data not found
         if (Object.keys(info).length === 0) {

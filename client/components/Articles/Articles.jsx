@@ -1,62 +1,59 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import {Header} from "semantic-ui-react";
 import {connect} from "react-redux";
+import PropTypes from "prop-types";
 
 /**
  * Actions
  */
-import * as ArticleActions from "redux/actions/ArticleActions";
+import {getAllArticles as getAllArticlesAction} from "redux/actions/ArticleActions";
 
 /**
  * Components
  */
 import {ArticlesGroup} from "components/Articles";
-import PageLoader from "PageLoader";
+import {PageLoader} from "components/PageLoader";
 
-class Articles extends React.Component {
+/**
+ * Articles component
+ */
+export class Articles extends Component {
 
-    constructor (props) {
-        super(props);
+    static propTypes = {
+        articles: PropTypes.array,
+        getAllArticles: PropTypes.func,
+        isLoaded: PropTypes.bool,
+    };
 
-        this.state = {
-            "isLoading": true
-        };
-    }
+    /**
+     * Method called after mounted component
+     */
+    componentDidMount() {
+        const {articles, getAllArticles} = this.props;
 
-    componentWillMount () {
-        let {articles, dispatch} = this.props;
-
-        if (articles.size === 0) {
-            dispatch(ArticleActions.getAllArticles())
-                .then(res => {
-                    this.setState({
-                        "isLoading": false
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                    this.setState({
-                        "isLoading": false
-                    });
-                })
+        if (articles.length === 0) {
+            getAllArticles();
         }
     }
 
-    render () {
-        let {articles} = this.props,
-            {isLoading} = this.state;
+    /**
+     * Render JSX to HTML
+     * @returns {Node} Rendered component
+     */
+    render() {
+        const {articles, isLoaded} = this.props;
 
-        if (articles.size === 0 && isLoading) {
-            return <PageLoader show={isLoading} />;
+        if (articles.length === 0 && !isLoaded) {
+            return <PageLoader show={!isLoaded} />;
         }
 
         return (
             <div>
                 <Header as="h1">Articles</Header>
-                <ArticlesGroup elements={articles.toJS()} />
+                <ArticlesGroup elements={articles} />
             </div>
         );
     }
@@ -64,11 +61,22 @@ class Articles extends React.Component {
 }
 
 /**
- * Environment
+ * Fetch store data to props
+ * @param store - Application store
  */
-const isTesting = process.env.NODE_ENV === "test";
+export const mapStateToProps = store => ({
+    articles: store.articles.items,
+    isLoaded: store.articles.isLoaded,
+});
 
 /**
- * Return component by environment
+ * Bind action creators
  */
-export default isTesting ? Articles : connect(store => ({ articles: store.articles }))(Articles);
+export const mapDispatchToProps = {
+    getAllArticles: getAllArticlesAction,
+};
+
+/**
+ * Connected component
+ */
+export const ArticlesConnected = connect(mapStateToProps, mapDispatchToProps)(Articles);

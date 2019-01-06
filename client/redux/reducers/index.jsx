@@ -6,13 +6,13 @@ import {combineReducers} from "redux";
 /**
  * Reducers
  */
-import user from "./UserReducer";
-import comments from "./CommentReducer";
-import articles from "./ArticleReducer";
+import {UserReducer} from "./UserReducer";
+import {CommentReducer} from "./CommentReducer";
+import {ArticleReducer} from "./ArticleReducer";
 
 
 export default combineReducers({
-    "user": user,
-    "comments": comments,
-    "articles": articles
+    user: UserReducer,
+    comments: CommentReducer,
+    articles: ArticleReducer,
 });

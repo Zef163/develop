@@ -1,3 +1,3 @@
-export {default as Comments} from "./Comments";
-export {default as CommentsItem} from "./CommentsItem";
-export {default as CommentsGroup} from "./CommentsGroup";
+export {CommentsConnected, Comments} from "./Comments";
+export {CommentsItemConnected, CommentsItem} from "./CommentsItem";
+export {CommentsGroup} from "./CommentsGroup";

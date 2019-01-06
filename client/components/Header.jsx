@@ -1,63 +1,64 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import {NavLink} from "react-router-dom";
 import {Grid, Container} from "semantic-ui-react";
 
-export default class Header extends React.Component {
+/**
+ * Header component
+ */
+export class Header extends Component {
 
     /**
      * Function for get menu elements
      */
-    getMenuElements () {
-        let defaultClassName = "app-header__link",
-            activeClassName = `${defaultClassName}--active`;
+    getMenuElements = () => {
+        const defaultClassName = "app-header__link";
+        const activeClassName = `${defaultClassName}--active`;
 
         return [
             {
-                "to": "/",
-                "exact": true,
-                "className": defaultClassName,
-                "activeClassName": activeClassName,
-                "dangerouslySetInnerHTML": {
-                    "__html": "Main"
+                to: "/",
+                exact: true,
+                className: defaultClassName,
+                activeClassName,
+                dangerouslySetInnerHTML: {
+                    __html: "Main",
                 },
-                "id": "main"
+                id: "main",
             },
             {
-                "to": "/articles/",
-                "className": defaultClassName,
-                "activeClassName": activeClassName,
-                "dangerouslySetInnerHTML": {
-                    "__html": "Articles"
+                to: "/articles/",
+                className: defaultClassName,
+                activeClassName,
+                dangerouslySetInnerHTML: {
+                    __html: "Articles",
                 },
-                "id": "articles"
+                id: "articles",
             },
             {
-                "to": "/comments/",
-                "className": defaultClassName,
-                "activeClassName": activeClassName,
-                "dangerouslySetInnerHTML": {
-                    "__html": "Comments"
+                to: "/comments/",
+                className: defaultClassName,
+                activeClassName,
+                dangerouslySetInnerHTML: {
+                    __html: "Comments",
                 },
-                "id": "comments"
-            }
+                id: "comments",
+            },
         ];
-    }
+    };
 
     /**
      * Function for render NavLink elements from menu elements
      */
-    renderMenuElements () {
-        return this.getMenuElements().map((params) => {
-            return (
-                <NavLink {...params} key={`menuItem__${params.id}`} />
-            );
-        });
+    renderMenuElements() {
+        return this.getMenuElements().map(params => (
+            <NavLink {...params} key={`menuItem__${params.id}`} />
+        ));
     }
 
-    render () {
+    render() {
         return (
             <header className="app-header">
                 <Container>

@@ -1,25 +1,25 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Container} from "semantic-ui-react";
 
 /**
  * Components
  */
-import Footer from "Footer";
-import Header from "Header";
+import {Footer} from "Footer";
+import {Header} from "Header";
 
 
-export default class App extends React.Component {
+export default class App extends Component {
 
     static propTypes = {
-        "children": PropTypes.object,
-        "dispatch": PropTypes.func.isRequired
+        children: PropTypes.object,
+        dispatch: PropTypes.func.isRequired,
     };
 
-    render () {
+    render() {
         return (
             <div id="app-view">
                 <Header />

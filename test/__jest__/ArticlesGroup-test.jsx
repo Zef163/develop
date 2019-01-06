@@ -2,150 +2,125 @@
  * Libraries
  */
 import React from "react";
-import PropTypes from "prop-types";
-import {mount} from "enzyme";
+import {mount, configure} from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 
 /**
- * Components
+ * Component for testing
  */
 import {ArticlesGroup} from "components/Articles";
-import Store from "redux/store";
 
 /**
- * Setup function
+ * Emulate React.Router
  */
-function setup() {
-    // Replace 'window.console.error' to custom function
-    console.error = jest.fn((warn) => {
-        throw new Error(warn);
-    });
+configure({
+    adapter: new Adapter(),
+});
+
+/**
+ * Mock components
+ */
+jest.mock('react-router-dom', () => ({Link: 'Link'}));
+
+// Fixture
+const articles = [
+    {
+        id: "1",
+        author: {
+            id: "1",
+            name: "John Doe",
+        },
+        title: "Title description",
+        text: "Article description",
+        comments: [],
+    },
+    {
+        id: "2",
+        author: {
+            id: "1",
+            name: "John Doe",
+        },
+        title: "Title",
+        text: "Article",
+        comments: [],
+    },
+];
+
+let props;
+let wrapper;
+beforeEach(() => {
+    // Mock 'window.console.error'
+    console.error = jest.fn();
 
     // Component props
-    const defaultProps = {
-        "elements": Object(),
-        "store": Store,
-        "dispatch": Store.dispatch
+    props = {
+        elements: [],
     };
 
-    // Data
-    const articles = [
-        {
-            "id": "1",
-            "author": {
-                "id": "1",
-                "name": "John Doe"
-            },
-            "title": "Title description",
-            "text": "Article description",
-            "comments": []
-        },
-        {
-            "id": "2",
-            "author": {
-                "id": "1",
-                "name": "John Doe"
-            },
-            "title": "Title",
-            "text": "Article",
-            "comments": []
-        }
-    ];
-
-    // Emulate 'react-router'
-    const context = {
-        "context": {
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object
-        }
-    };
-
-    // Testing component
-    const component = mount(<ArticlesGroup {...defaultProps} />, context);
-
-    return {
-        defaultProps,
-        articles,
-        component
-    };
-}
+    // Testing wrapper
+    wrapper = mount(<ArticlesGroup {...props} />);
+});
 
 /**
  * Test
  */
 describe("Component 'ArticlesGroup'", () => {
-
     it("DOM structure", () => {
-        // Component for testing
-        const {component, articles} = setup();
 
-        // Check not exist component "Item.Group"
-        expect(component.find("ItemGroup")).toHaveLength(0);
+        // Check not exist wrapper "Item.Group"
+        expect(wrapper.find("ItemGroup")).toHaveLength(0);
 
         // Set data
-        component.setProps({
-            "elements": articles
+        wrapper.setProps({
+            elements: articles,
         });
 
-        // Check exist component "Item.Group"
-        expect(component.find("ItemGroup")).toHaveLength(1);
+        // Check exist wrapper "Item.Group"
+        expect(wrapper.find("ItemGroup")).toHaveLength(1);
 
         // Count article elements
-        let countElements = Object.keys(articles).length;
+        const countElements = Object.keys(articles).length;
 
         // Check length components "Item"
-        expect(component.find("Item")).toHaveLength(countElements);
+        expect(wrapper.find("Item")).toHaveLength(countElements);
 
         // Check length components "ItemImage"
-        expect(component.find("ItemImage")).toHaveLength(countElements);
+        expect(wrapper.find("ItemImage")).toHaveLength(countElements);
 
         // Check length components "ItemContent"
-        expect(component.find("ItemContent")).toHaveLength(countElements);
+        expect(wrapper.find("ItemContent")).toHaveLength(countElements);
 
         // Check length components "ItemHeader"
-        expect(component.find("ItemHeader")).toHaveLength(countElements);
+        expect(wrapper.find("ItemHeader")).toHaveLength(countElements);
 
         // Check length components "ItemMeta"
-        expect(component.find("ItemMeta")).toHaveLength(countElements);
+        expect(wrapper.find("ItemMeta")).toHaveLength(countElements);
 
         // Check is render one DOM element in root
-        expect(component).toHaveLength(1);
+        expect(wrapper).toHaveLength(1);
     });
 
-    it("render empty component", () => {
-        // Component for testing
-        const {component} = setup();
-
+    it("render empty wrapper", () => {
         // Check empty elements
-        expect(component.first("p").text()).toEqual("Articles not found");
+        expect(wrapper.first("p").text()).toEqual("Articles not found");
 
         // Check is render one DOM element in root
-        expect(component).toHaveLength(1);
+        expect(wrapper).toHaveLength(1);
     });
 
-    it("render not empty component", () => {
-        // Component for testing
-        const {component, articles} = setup();
-
+    it("render not empty wrapper", () => {
         // Set data
-        component.setProps({
-            "elements": articles
+        wrapper.setProps({
+            elements: articles,
         });
 
         // Check title article
-        component.find("ItemHeader > Link").forEach((node, key) => {
+        wrapper.find("ItemHeader > Link").forEach((node, key) => {
             expect(node.text()).toEqual(articles[key].title);
         });
 
         // Check description
-        component.find("ItemMeta").forEach((node, key) => {
+        wrapper.find("ItemMeta").forEach((node, key) => {
             expect(node.text()).toEqual(articles[key].text);
         });
     });

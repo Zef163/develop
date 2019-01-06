@@ -1,5 +1,5 @@
 # Install Node.js LTS Version
-FROM node:boron
+FROM node:jessie
 
 # Install Node.js Package Manager
 RUN apt-get update && apt-get install -y npm

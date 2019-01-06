@@ -2,147 +2,107 @@
  * Libraries
  */
 import React from "react";
-import PropTypes from "prop-types";
-import {mount} from "enzyme";
+import {mount, configure} from "enzyme";
+import Adapter from "enzyme-adapter-react-16";
 
 /**
- * Components
+ * Component for testing
  */
 import {CommentsGroup} from "components/Comments";
-import Store from "redux/store";
 
 /**
- * Setup
+ * Emulate React.Router
  */
-function setup() {
-    // Replace 'window.console.error' to custom function
-    console.error = jest.fn((warn) => {
-        throw new Error(warn);
-    });
+configure({
+    adapter: new Adapter(),
+});
+
+/**
+ * Mock components
+ */
+jest.mock("components/Comments/CommentsItem", () => ({CommentsItemConnected: 'CommentsItemConnected'}));
+
+// Fixture
+const comments = [
+    {
+        id: "1",
+        text: "Non et atque. occaecati deserunt quas accusantium unde odit nobis qui voluptatem.",
+        commenter: {
+            id: "1",
+            name: "John Doe",
+        },
+    },
+    {
+        id: "4",
+        text: "Harum non quasi et ratione. tempore iure ex voluptates in ratione.",
+        commenter: {
+            id: "2",
+            name: "Ervin Howell",
+        },
+    },
+    {
+        id: "5",
+        text: "Quia molestiae reprehenderit quasi aspernatur.",
+        commenter: {
+            id: "3",
+            name: "Clementine Bauch",
+        },
+    },
+];
+
+let props;
+let wrapper;
+beforeEach(() => {
+    // Mock 'window.console.error'
+    console.error = jest.fn();
 
     // Component props
-    const defaultProps = {
-        "comments": Object(),
-        "store": Store,
-        "dispatch": Store.dispatch
-    };
-
-    // Data
-    let comments = [
-        {
-            "id": "1",
-            "text": "Non et atque. occaecati deserunt quas accusantium unde odit nobis qui voluptatem.",
-            "commenter": {
-                "id": "1",
-                "name": "John Doe"
-            }
-        },
-        {
-            "id": "4",
-            "text": "Harum non quasi et ratione. tempore iure ex voluptates in ratione.",
-            "commenter": {
-                "id": "2",
-                "name": "Ervin Howell"
-            }
-        },
-        {
-            "id": "5",
-            "text": "Quia molestiae reprehenderit quasi aspernatur.",
-            "commenter": {
-                "id": "3",
-                "name": "Clementine Bauch"
-            }
-        }
-    ];
-
-    // Emulate 'react-router'
-    const context = {
-        "context": {
-            "router": {
-                "history": {
-                    "push": () => {},
-                    "replace": () => {},
-                    "createHref": () => {}
-                }
-            }
-        },
-        "childContextTypes": {
-            "router": PropTypes.object
-        }
+    props = {
+        articleID: 0,
+        comments: [],
+        editForm: false,
+        form: false,
+        replyForm: false,
     };
 
     // Testing component
-    const component = mount(<CommentsGroup {...defaultProps} />, context);
-
-    return {
-        defaultProps,
-        comments,
-        component
-    };
-}
+    wrapper = mount(<CommentsGroup {...props} />);
+});
 
 /**
  * Test
  */
 describe("Component 'CommentsGroup'", () => {
-
     it("DOM structure", () => {
-        // Component for testing
-        const {component, comments} = setup();
-
         // Set data
-        component.setProps({
-            "comments": comments,
-            "replyForm": true,
-            "editForm": true
+        wrapper.setProps({
+            comments,
+            replyForm: true,
+            editForm: true,
         });
 
-        // Comments length
-        let commentsLength = Object.keys(comments).length;
-
         // Check length components "Comment"
-        expect(component.find("Comment")).toHaveLength(commentsLength);
-
-        // Check length components "CommentAvatar"
-        expect(component.find("CommentAvatar")).toHaveLength(commentsLength);
-
-        // Check length components "CommentContent"
-        expect(component.find("CommentContent")).toHaveLength(commentsLength);
-
-        // Check length components "Link" from user page
-        expect(component.find("CommentContent > Link")).toHaveLength(commentsLength);
-
-        // Check length components "CommentText"
-        expect(component.find("CommentText")).toHaveLength(commentsLength);
-
-        // Check length components "CommentActions"
-        expect(component.find("CommentActions")).toHaveLength(commentsLength);
+        expect(wrapper.find("CommentsItemConnected")).toHaveLength(Object.keys(comments).length);
     });
 
     it("render empty component", () => {
-        // Component for testing
-        const {component} = setup();
-
         // Check empty elements
-        expect(component.find("CommentsGroup").text()).toEqual("Comments not found");
+        expect(wrapper.find("CommentsGroup").text()).toEqual("Comments not found");
 
         // Check is render one DOM element in root
-        expect(component).toHaveLength(1);
+        expect(wrapper).toHaveLength(1);
     });
 
     it("render not empty component", () => {
-        // Component for testing
-        const {component, comments} = setup();
-
         // Set data
-        component.setProps({
-            "comments": comments,
-            "replyForm": true,
-            "editForm": true
+        wrapper.setProps({
+            comments,
+            replyForm: true,
+            editForm: true,
         });
 
         // Check comments
-        component.find("CommentsItem").forEach((node, key) => {
+        wrapper.find("CommentsItem").forEach((node, key) => {
             // Check link to user page
             expect(node.find("CommentContent > Link").prop("to")).toEqual(`/users/view/${comments[key].commenter.id}/`);
 

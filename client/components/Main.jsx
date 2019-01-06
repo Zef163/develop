@@ -3,14 +3,12 @@
  */
 import React from "react";
 
-export default class Main extends React.Component {
-
-    render () {
-        return (
-            <div>
-                Main.jsx
-            </div>
-        );
-    }
-
-}
+/**
+ * Main component
+ * @returns {Node} Rendered component
+ */
+export const Main = () => (
+    <div>
+        Main.jsx
+    </div>
+);

@@ -1,132 +1,104 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Header, Grid} from "semantic-ui-react";
 import {connect} from "react-redux";
-import Immutable from "immutable";
 
 /**
  * Actions
  */
-import * as UserActions from "redux/actions/UserActions";
+import {getOneUser as getOneUserAction, changeUserName as changeUserNameAction} from "redux/actions/UserActions";
 
 /**
  * Components
  */
 import {CommentsGroup} from "components/Comments";
 import {UsersItem} from "components/Users";
-import Error404 from "Error404";
-import PageLoader from "PageLoader";
+import {Error404} from "components/Error404";
+import {PageLoader} from "components/PageLoader";
 
-class Users extends React.Component {
+export class Users extends Component {
 
     static propTypes = {
-        "dispatch": PropTypes.func,
-        "match": PropTypes.oneOfType([
+        match: PropTypes.oneOfType([
             PropTypes.array,
-            PropTypes.object
+            PropTypes.object,
         ]),
-        "user": PropTypes.oneOfType([
-            PropTypes.instanceOf(Immutable.Map),
-            PropTypes.instanceOf(Immutable.List)
-        ])
+        userInfo: PropTypes.object,
+        comments: PropTypes.array,
+        isLoaded: PropTypes.bool,
+        getOneUser: PropTypes.func,
+        changeUserName: PropTypes.func,
     };
 
     static defaultProps = {
-        "dispatch": () => {
-            return false;
-        },
-        "match": Object(),
-        "user": new Immutable.Map()
+        match: Object(),
     };
 
-    constructor (props) {
+    constructor(props) {
         super(props);
-
-        this.state = {
-            "isLoading": true
-        };
 
         this.onUpdateComments = this.onUpdateComments.bind(this);
     }
 
-    componentWillMount () {
-        let {dispatch} = this.props,
-            userID = this.getUserID();
+    componentDidMount() {
+        const {getOneUser} = this.props;
+        const userID = this.getUserID();
 
-        dispatch(UserActions.getOneUser(userID))
-            .then(() => {
-                this.endLoading();
-            })
-            .catch((error) => {
-                console.error(error);
-                this.endLoading();
-            });
+        getOneUser(userID);
+        this.endLoading();
     }
 
     /**
      * Change loading status is "Loaded"
      */
-    endLoading () {
+    endLoading() {
         this.setState({
-            "isLoading": false
+            isLoading: false,
         });
     }
 
     /**
      * Function for update info from current page
      */
-    onUpdateComments (newName = "") {
-        let userID = this.getUserID();
+    onUpdateComments(newName = "") {
+        const {changeUserName} = this.props;
+        const userID = this.getUserID();
 
         // Update user name
-        this.props.dispatch(UserActions.changeUserName(userID, newName))
-            .then()
-            .catch((error) => {
-                console.error(error);
-            });
+        changeUserName(userID, newName);
     }
 
     /**
      * Function for get user identification number
      */
-    getUserID () {
-        let {params} = this.props.match,
-            userID = 0;
-
-        if (Object.prototype.hasOwnProperty.call(params, "id")) {
-            userID = params.id;
-        }
-
-        return parseInt(userID);
+    getUserID() {
+        const {params} = this.props.match;
+        return Number(params.id || 0);
     }
 
-    render () {
-        let userID = this.getUserID(),
-            {user} = this.props,
-            userInfo = user.getIn([`user_${userID}`, "userInfo"], Immutable.fromJS({})),
-            comments = user.getIn([`user_${userID}`, "comments"], Immutable.fromJS({})),
-            {isLoading} = this.state;
+    render() {
+        const {userInfo, comments, isLoaded} = this.props;
 
-        if (userInfo.size === 0) {
-            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
+        if (Object.keys(userInfo).length === 0) {
+            return isLoaded ? <Error404 /> : <PageLoader show />;
         }
 
         return (
             <Grid columns="12">
                 <Grid.Row>
                     <Grid.Column computer="12">
-                        <Header as="h1">{userInfo.getIn(["name"], "")}</Header>
+                        <Header as="h1">{userInfo.name || ''}</Header>
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column computer="4">
-                        <UsersItem info={userInfo.toJS()} updateComments={this.onUpdateComments} />
+                        <UsersItem info={userInfo} updateComments={this.onUpdateComments} />
                     </Grid.Column>
                     <Grid.Column computer="8">
-                        <CommentsGroup comments={comments.toJS()} editForm />
+                        <CommentsGroup comments={comments} editForm />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -136,11 +108,24 @@ class Users extends React.Component {
 }
 
 /**
- * Environment
+ * Fetch store data to props
+ * @param store - Application store
  */
-const isTesting = process.env.NODE_ENV === "test";
+export const mapStateToProps = store => ({
+    userInfo: store.user.userInfo,
+    comments: store.user.comments,
+    isLoaded: store.user.isLoaded,
+});
 
 /**
- * Return component by environment
+ * Bind action creators
  */
-export default isTesting ? Users : connect(store => ({ user: store.user, comments: store.comments }))(Users);
+export const mapDispatchToProps = {
+    getOneUser: getOneUserAction,
+    changeUserName: changeUserNameAction,
+};
+
+/**
+ * Connected component
+ */
+export const UsersConnected = connect(mapStateToProps, mapDispatchToProps)(Users);

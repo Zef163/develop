@@ -1,39 +1,65 @@
 /**
  * Libraries
  */
-import {Map, fromJS} from "immutable";
+import {handleActions} from "redux-actions";
+import {FULFILLED} from 'redux-promise-middleware';
 
 /**
- * User reducer
- * @param state
- * @param action
- * @returns Immutable.Map
+ * Actions
  */
-export default function reducer (state = new Map(), action) {
-    switch (action.type) {
-        case "GET_ALL_COMMENTS": {
-            return fromJS(action.data);
-        }
-        case "CHANGE_USER_NAME": {
-            // Update author name
-            state.map((comment, index) => {
-                if (Number(comment.getIn(["commenter", "id"])) === Number(action.userID)) {
-                    state = state.setIn([index, "commenter", "name"], action.name);
-                }
-            });
-            return state;
-        }
-        case "EDIT_COMMENT": {
-            state.map((comment, index) => {
-                if (Number(comment.get("id")) === Number(action.commentID)) {
-                    state = state.setIn([index, "text"], action.text);
-                }
-            });
+import {getAllComments, editComment} from "redux/actions/CommentsActions";
+import {changeUserName} from "redux/actions/UserActions";
 
-            return state;
-        }
-        default: {
-            return state;
-        }
-    }
-}
+const defaultState = {
+    items: [],
+    isLoaded: false,
+};
+
+/**
+ * Comment reducer
+ */
+export const CommentReducer = handleActions(
+    {
+        [`${getAllComments}_${FULFILLED}`]: (store, {payload}) => {
+            const comments = payload.data.reduce((commentsList, article) => [...commentsList, ...article.comments], []);
+            return {
+                items: comments,
+                isLoaded: true,
+            };
+        },
+
+        /**
+         * Edit comment
+         * @param state - State of reducer
+         * @param {number} commentID - Comment identification
+         * @param {string} text - New text of comment
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [editComment]: (store, {payload: {commentID, text}}) => ({
+            ...store,
+            items: store.items.map(comment => ({
+                ...comment,
+                text: Number(comment.id) === Number(commentID) ? text : comment.text,
+            })),
+        }),
+
+        /**
+         * Change user name
+         * @param state - State of reducer
+         * @param {number} id - User identification
+         * @param {string} name - New user name
+         * @returns {{items: Array<>, isLoaded: boolean}}
+         */
+        [changeUserName]: (state, {payload: {id, name}}) => ({
+            ...state,
+            items: state.items.map(comment => ({
+                ...comment,
+                commenter: {
+                    ...comment.commenter,
+                    name: Number(comment.commenter.id) === Number(id) ? name : comment.commenter.name,
+                },
+            })),
+        }),
+    },
+    defaultState,
+);

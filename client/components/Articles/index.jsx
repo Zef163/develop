@@ -1,3 +1,3 @@
-export {default as Articles} from "./Articles";
-export {default as ArticlesOne} from "./ArticlesOne";
-export {default as ArticlesGroup} from "./ArticlesGroup";
+export {ArticlesConnected, Articles} from "./Articles";
+export {ArticlesOneConnected, ArticlesOne} from "./ArticlesOne";
+export {ArticlesGroup} from "./ArticlesGroup";

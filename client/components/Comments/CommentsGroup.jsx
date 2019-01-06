@@ -1,7 +1,7 @@
 /**
  * Libraries
  */
-import React from "react";
+import React, {Component} from "react";
 import PropTypes from "prop-types";
 import {Button, Comment, Form} from "semantic-ui-react";
 import Axios from "axios";
@@ -9,30 +9,30 @@ import Axios from "axios";
 /**
  * Components
  */
-import {CommentsItem} from "components/Comments";
+import {CommentsItemConnected} from "components/Comments";
 
-export default class CommentsGroup extends React.Component {
+/**
+ * Comments group component
+ */
+export class CommentsGroup extends Component {
 
     static propTypes = {
-        "articleID": PropTypes.number,
-        "comments": PropTypes.oneOfType([
-            PropTypes.array,
-            PropTypes.object
-        ]),
-        "editForm": PropTypes.bool,
-        "form": PropTypes.bool,
-        "replyForm": PropTypes.bool
+        articleID: PropTypes.number,
+        comments: PropTypes.array,
+        editForm: PropTypes.bool,
+        form: PropTypes.bool,
+        replyForm: PropTypes.bool,
     };
 
     static defaultProps = {
-        "articleID": 0,
-        "comments": Object(),
-        "editForm": false,
-        "form": false,
-        "replyForm": false
+        articleID: 0,
+        comments: [],
+        editForm: false,
+        form: false,
+        replyForm: false,
     };
 
-    constructor (props) {
+    constructor(props) {
         super(props);
 
         this.onSubmitReplyForm = this.onSubmitReplyForm.bind(this);
@@ -41,18 +41,18 @@ export default class CommentsGroup extends React.Component {
     /**
      * Function for send request from comments form
      */
-    onSubmitReplyForm () {
-        let {articleID} = this.props;
+    onSubmitReplyForm() {
+        const {articleID} = this.props;
 
         Axios.post("/api/comment/create", {
-            "articleID": articleID
+            articleID,
         }).then(
             // Success
-            (response) => {
+            response => {
                 console.log(response);
             },
             // Error
-            (error) => {
+            error => {
                 console.error(error);
             }
         );
@@ -61,8 +61,8 @@ export default class CommentsGroup extends React.Component {
     /**
      * Function for render comments form
      */
-    renderForm () {
-        let {form, articleID} = this.props;
+    renderForm() {
+        const {form, articleID} = this.props;
 
         if (form === false || articleID === 0) {
             return "";
@@ -76,25 +76,23 @@ export default class CommentsGroup extends React.Component {
         );
     }
 
-    render () {
-        let {comments, replyForm, editForm} = this.props;
+    render() {
+        const {comments, replyForm, editForm} = this.props;
 
-        if (Object.keys(comments).length === 0) {
+        if (comments.length === 0) {
             return <p>Comments not found</p>;
         }
 
         return (
             <Comment.Group>
-                {comments.map((item) => {
-                    return (
-                        <CommentsItem
-                            data={item}
-                            editForm={editForm}
-                            key={`one-comment__${item.id}`}
-                            replyForm={replyForm}
-                        />
-                    );
-                })}
+                {comments.map(item => (
+                    <CommentsItemConnected
+                        data={item}
+                        editForm={editForm}
+                        key={`one-comment__${item.id}`}
+                        replyForm={replyForm}
+                    />
+                ))}
 
                 {this.renderForm()}
             </Comment.Group>

@@ -1,2 +1,2 @@
-export {default as Users} from "./Users";
-export {default as UsersItem} from "./UsersItem";
+export {Users, UsersConnected} from "./Users";
+export {UsersItem} from "./UsersItem";

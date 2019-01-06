@@ -1,62 +1,50 @@
 /**
  * Libraries
- */import React from "react";
+ */
+import React, {Component} from "react";
 import {Header} from "semantic-ui-react";
 import {connect} from "react-redux";
+import PropTypes from "prop-types";
 
 /**
  * Actions
  */
-import * as CommentsAction from "redux/actions/CommentsActions";
+import {getAllComments as getAllCommentsAction} from "redux/actions/CommentsActions";
 
 /**
  * Components
  */
 import {CommentsGroup} from "components/Comments";
-import Error404 from "Error404";
-import PageLoader from "PageLoader";
+import {Error404} from "components/Error404";
+import {PageLoader} from "components/PageLoader";
 
-class Comments extends React.Component {
+export class Comments extends Component {
 
-    constructor (props) {
-        super(props);
+    static propTypes = {
+        isLoaded: PropTypes.bool,
+        comments: PropTypes.array,
+        getAllComments: PropTypes.func,
+    };
 
-        this.state = {
-            "isLoading": true
-        };
-    }
+    componentDidMount() {
+        const {comments, getAllComments} = this.props;
 
-    componentWillMount () {
-        let {comments, dispatch} = this.props;
-
-        if (comments.size === 0) {
-            dispatch(CommentsAction.getAllComments())
-                .then(res => {
-                    this.setState({
-                        "isLoading": false
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                    this.setState({
-                        "isLoading": false
-                    });
-                });
+        if (comments.length === 0) {
+            getAllComments();
         }
     }
 
-    render () {
-        let {comments} = this.props,
-            {isLoading} = this.state;
+    render() {
+        const {comments, isLoaded} = this.props;
 
-        if (comments.size === 0) {
-            return isLoading ? <PageLoader show={isLoading} /> : <Error404 />;
+        if (comments.length === 0) {
+            return isLoaded ? <Error404 /> : <PageLoader show />;
         }
 
         return (
             <div>
                 <Header as="h1">Comments</Header>
-                <CommentsGroup comments={comments.toJS()} editForm />
+                <CommentsGroup comments={comments} editForm />
             </div>
         );
     }
@@ -64,11 +52,22 @@ class Comments extends React.Component {
 }
 
 /**
- * Environment
+ * Fetch store data to props
+ * @param store - Application store
  */
-const isTesting = process.env.NODE_ENV === "test";
+export const mapStateToProps = store => ({
+    comments: store.comments.items,
+    isLoaded: store.comments.isLoaded,
+});
 
 /**
- * Return component by environment
+ * Bind action creators
  */
-export default isTesting ? Comments : connect(store => ({ comments: store.comments }))(Comments);
+export const mapDispatchToProps = {
+    getAllComments: getAllCommentsAction,
+};
+
+/**
+ * Connected component
+ */
+export const CommentsConnected = connect(mapStateToProps, mapDispatchToProps)(Comments);
