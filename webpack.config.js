@@ -77,7 +77,6 @@ const webpackConfig = {
     devServer: {
         historyApiFallback: true,
         hot: true,
-        // "filename": "bundle.js",
         contentBase: path.resolve(__dirname, "client"),
         publicPath: "http://localhost:8080/dist/",
     },
