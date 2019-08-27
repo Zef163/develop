@@ -1,7 +1,8 @@
 /**
  * Hot fix for Internet Explorer 8+
  */
-import "babel-polyfill";
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 /**
  * Libraries

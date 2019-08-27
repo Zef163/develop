@@ -2,7 +2,7 @@
  * Libraries
  */
 import {handleActions} from "redux-actions";
-import {FULFILLED, PENDING} from 'redux-promise-middleware';
+import {ActionType} from 'redux-promise-middleware';
 
 /**
  * Actions
@@ -25,7 +25,7 @@ export const UserReducer = handleActions(
          * Reset user reducer before getting user info
          * @returns {{userInfo: {}, comments: Array, isLoaded: boolean}}
          */
-        [`${getOneUser}_${PENDING}`]: () => defaultState,
+        [`${getOneUser}_${ActionType.Pending}`]: () => defaultState,
 
         /**
          * Get user info
@@ -34,7 +34,7 @@ export const UserReducer = handleActions(
          * @param requestData - Axios request data
          * @returns {{userInfo, comments: Array, isLoaded: boolean}}
          */
-        [`${getOneUser}_${FULFILLED}`]: (state, {payload: {userID, requestData}}) => {
+        [`${getOneUser}_${ActionType.Fulfilled}`]: (state, {payload: {userID, requestData}}) => {
             let comments = [];
             let userInfo = {};
 

@@ -1,5 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const env = process.env.NODE_ENV || "development";
 
@@ -51,6 +53,7 @@ const webpackConfig = {
                     cacheDirectory: env !== "production",
                 },
                 include: [path.resolve(__dirname, "client")],
+                exclude: [path.resolve(__dirname, "node_modules")],
             },
             {
                 test: /\.png$/u,
@@ -89,14 +92,16 @@ switch (env) {
                 minimize: true,
                 debug: false,
             }),
-            new webpack.optimize.UglifyJsPlugin({
-                compress: {
-                    unused: true,
-                    dead_code: true,
-                    warnings: false,
-                },
-            })
+            // new BundleAnalyzerPlugin(),
         );
+        webpackConfig.optimization = {
+            minimizer: [
+                new UglifyJsPlugin({
+                    test: /\.jsx?$/i,
+                    parallel: true,
+                }),
+            ],
+        };
         break;
     }
     case "development": {

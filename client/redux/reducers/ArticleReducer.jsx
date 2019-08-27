@@ -2,7 +2,7 @@
  * Libraries
  */
 import {handleActions} from "redux-actions";
-import {FULFILLED} from 'redux-promise-middleware';
+import {ActionType} from 'redux-promise-middleware';
 
 /**
  * Actions
@@ -27,7 +27,7 @@ export const ArticleReducer = handleActions(
          * @param payload - Payload data
          * @returns {{items: Array<>, isLoaded: boolean}}
          */
-        [`${getAllArticles}_${FULFILLED}`]: (state, {payload}) => ({
+        [`${getAllArticles}_${ActionType.Fulfilled}`]: (state, {payload}) => ({
             items: payload.data,
             isLoaded: true,
         }),
@@ -38,7 +38,7 @@ export const ArticleReducer = handleActions(
          * @param payload - Payload data
          * @returns {{items: Array<>, isLoaded: boolean}}
          */
-        [`${getOneArticle}_${FULFILLED}`]:  (state, {payload}) => {
+        [`${getOneArticle}_${ActionType.Fulfilled}`]:  (state, {payload}) => {
             const haveArticle = state.items.some(item => Number(item.id) === Number(payload.articleID));
             const loadedData = payload.requestData.data.find(item => Number(item.id) === Number(payload.articleID));
             return haveArticle ? state : {...state, items: [...state.items, loadedData]};

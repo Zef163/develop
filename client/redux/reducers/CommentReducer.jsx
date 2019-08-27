@@ -2,7 +2,7 @@
  * Libraries
  */
 import {handleActions} from "redux-actions";
-import {FULFILLED} from 'redux-promise-middleware';
+import {ActionType} from 'redux-promise-middleware';
 
 /**
  * Actions
@@ -20,7 +20,7 @@ const defaultState = {
  */
 export const CommentReducer = handleActions(
     {
-        [`${getAllComments}_${FULFILLED}`]: (store, {payload}) => {
+        [`${getAllComments}_${ActionType.Fulfilled}`]: (store, {payload}) => {
             const comments = payload.data.reduce((commentsList, article) => [...commentsList, ...article.comments], []);
             return {
                 items: comments,

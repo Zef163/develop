@@ -2,7 +2,7 @@
  * Libraries
  */
 import {createStore, applyMiddleware, compose} from "redux";
-import promiseMiddleware from 'redux-promise-middleware';
+import {createPromise} from 'redux-promise-middleware';
 import logger from "redux-logger";
 
 /**
@@ -14,7 +14,7 @@ import reducers from "./reducers/";
  * Middleware
  */
 let middleware = [
-    promiseMiddleware({
+    createPromise({
         promiseTypeDelimiter: '_',
     }),
 ];
