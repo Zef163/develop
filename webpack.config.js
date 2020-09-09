@@ -31,10 +31,6 @@ const webpackConfig = {
                     // Compiles Less to CSS
                     {
                         loader: "less-loader",
-                        options: {
-                            strictMath: true,
-                            noIeCompat: true,
-                        },
                     },
                 ],
             },
